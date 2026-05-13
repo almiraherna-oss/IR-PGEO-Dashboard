@@ -1,0 +1,1683 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PGE Investor Relations Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  --navy:    #07111F;
+  --navy2:   #0D1F33;
+  --navy3:   #132840;
+  --green:   #00C48C;
+  --green2:  #00A376;
+  --green-dim: rgba(0,196,140,0.12);
+  --green-glow: rgba(0,196,140,0.25);
+  --bg:      #F0F3F7;
+  --bg2:     #E8ECF2;
+  --white:   #FFFFFF;
+  --card:    #FFFFFF;
+  --border:  rgba(0,0,0,0.07);
+  --text1:   #0D1F33;
+  --text2:   #4A5568;
+  --text3:   #8A97A8;
+  --red:     #E5484D;
+  --amber:   #F5A623;
+  --blue:    #2563EB;
+  --sidebar-w: 240px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  background-image: radial-gradient(circle, rgba(0,0,0,0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: var(--text1);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 99px; }
+
+.app { display: flex; height: 100%; overflow: hidden; }
+
+/* ══ SIDEBAR ══════════════════════════════════════════════════════ */
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--navy);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  position: relative;
+  z-index: 20;
+}
+
+/* subtle radial glow top */
+.sidebar::before {
+  content: '';
+  position: absolute;
+  top: -60px; left: -60px;
+  width: 260px; height: 260px;
+  background: radial-gradient(circle, rgba(0,196,140,0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.sidebar-logo {
+  padding: 22px 18px 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  position: relative;
+}
+
+.logo-badge {
+  background: var(--green-dim);
+  color: var(--green);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  padding: 3px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-bottom: 10px;
+  border: 1px solid rgba(0,196,140,0.25);
+  text-transform: uppercase;
+}
+
+.logo-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.9);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+.nav-section { padding: 14px 0 4px; }
+
+.nav-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: rgba(255,255,255,0.2);
+  padding: 0 18px 8px;
+  text-transform: uppercase;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 18px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.45);
+  cursor: pointer;
+  transition: all 0.18s ease;
+  border-left: 2px solid transparent;
+  user-select: none;
+  position: relative;
+  margin: 1px 8px;
+  border-radius: 8px;
+  border-left: none;
+}
+
+.nav-item:hover {
+  color: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.06);
+}
+
+.nav-item.active {
+  color: var(--green);
+  background: var(--green-dim);
+  font-weight: 600;
+}
+
+.nav-item.active i { color: var(--green); }
+
+.nav-item i { font-size: 16px; opacity: 0.8; }
+.nav-item.active i { opacity: 1; }
+
+.nav-badge {
+  margin-left: auto;
+  background: var(--green);
+  color: #000;
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 20px;
+}
+
+.nav-badge-red { background: var(--red); color: #fff; }
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 14px 18px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  font-size: 10px;
+  color: rgba(255,255,255,0.25);
+}
+
+/* ══ MAIN ══════════════════════════════════════════════════════════ */
+.main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+
+.topbar {
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 28px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.04);
+}
+
+.topbar-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text1);
+  flex: 1;
+  letter-spacing: -0.02em;
+}
+
+.topbar-date {
+  font-size: 11.5px;
+  color: var(--text2);
+  background: var(--bg);
+  padding: 5px 13px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  font-weight: 500;
+}
+
+.btn-export {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, var(--green2) 0%, var(--green) 100%);
+  padding: 8px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  letter-spacing: 0.01em;
+  box-shadow: 0 2px 12px var(--green-glow);
+  font-family: inherit;
+}
+
+.btn-export:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px var(--green-glow);
+}
+
+.content { padding: 24px 28px; flex: 1; }
+.page { display: none; }
+.page.active { display: block; }
+
+/* ══ METRIC CARDS ══════════════════════════════════════════════════ */
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.metric-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px 18px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.07);
+}
+
+/* top accent bar per card */
+.metric-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 18px; right: 18px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--green), transparent);
+  border-radius: 0 0 2px 2px;
+}
+
+.metric-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--text3);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.metric-value {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text1);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.metric-sub { font-size: 11px; margin-top: 6px; font-weight: 500; }
+.metric-up   { color: var(--green2); }
+.metric-down { color: var(--red); }
+
+/* ══ LAYOUT GRIDS ══════════════════════════════════════════════════ */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+
+/* ══ CARDS ═════════════════════════════════════════════════════════ */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 20px;
+  transition: box-shadow 0.2s;
+}
+
+.card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text1);
+  letter-spacing: -0.01em;
+}
+
+.card-tag {
+  font-size: 10px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.tag-live    { background: rgba(0,196,140,0.12); color: #00A376; }
+.tag-info    { background: rgba(37,99,235,0.1);  color: #2563EB; }
+.tag-warn    { background: rgba(245,166,35,0.12); color: #B07D10; }
+
+/* ══ BADGES ════════════════════════════════════════════════════════ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+}
+
+.badge-pos  { background: rgba(0,196,140,0.12); color: #00A376; }
+.badge-neg  { background: rgba(229,72,77,0.1);  color: #C0373B; }
+.badge-neu  { background: rgba(0,0,0,0.05);      color: var(--text2); }
+.badge-info { background: rgba(37,99,235,0.1);  color: #2563EB; }
+.badge-warn { background: rgba(245,166,35,0.12); color: #B07D10; }
+
+/* ══ INSIGHT BOX ════════════════════════════════════════════════════ */
+.insight-box {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy3) 60%, #0D3B2C 100%);
+  border-radius: 20px;
+  padding: 22px 24px;
+  margin-bottom: 22px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(0,196,140,0.2);
+  box-shadow: 0 0 60px rgba(0,196,140,0.08), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.insight-box::after {
+  content: '';
+  position: absolute;
+  top: -80px; right: -80px;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(0,196,140,0.15) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.insight-title {
+  font-size: 9.5px;
+  color: var(--green);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  font-weight: 700;
+}
+
+.insight-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.78);
+}
+
+.insight-bullet {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  margin-top: 6px;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px var(--green);
+}
+
+/* ══ INVESTOR ROWS ══════════════════════════════════════════════════ */
+.investor-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--bg);
+  transition: background 0.15s;
+}
+.investor-row:last-child { border-bottom: none; }
+
+.inv-avatar {
+  width: 32px; height: 32px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.inv-name  { font-size: 12.5px; font-weight: 600; color: var(--text1); }
+.inv-sub   { font-size: 11px; color: var(--text3); }
+.inv-val   { font-size: 12px; font-weight: 600; color: var(--text1); margin-left: auto; text-align: right; }
+
+/* ══ BAR ROWS ════════════════════════════════════════════════════════ */
+.bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.bar-label { font-size: 11.5px; color: var(--text2); width: 95px; flex-shrink: 0; font-weight: 500; }
+.bar-track {
+  flex: 1; height: 8px;
+  background: var(--bg);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.bar-fill { height: 100%; border-radius: 99px; transition: width 0.6s ease; }
+.bar-pct  { font-size: 11.5px; color: var(--text1); font-weight: 700; width: 36px; text-align: right; }
+
+/* ══ TABLES ══════════════════════════════════════════════════════════ */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th {
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--bg2);
+  background: var(--bg);
+}
+th:first-child { border-radius: 10px 0 0 0; }
+th:last-child  { border-radius: 0 10px 0 0; }
+td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--bg);
+  color: var(--text1);
+  vertical-align: middle;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(0,196,140,0.04); }
+
+/* ══ ALERTS ═════════════════════════════════════════════════════════ */
+.alert-strip {
+  padding: 12px 16px;
+  border-radius: 12px;
+  border-left: 3px solid;
+  margin-bottom: 10px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.alert-warn    { background: rgba(245,166,35,0.08); border-color: var(--amber); color: #7A5C00; }
+.alert-danger  { background: rgba(229,72,77,0.08);  border-color: var(--red);   color: #8B2020; }
+.alert-info    { background: rgba(37,99,235,0.07);  border-color: var(--blue);  color: #1E40AF; }
+.alert-success { background: rgba(0,196,140,0.08);  border-color: var(--green); color: #00A376; }
+
+/* ══ TIMELINE ════════════════════════════════════════════════════════ */
+.engagement-timeline { position: relative; padding-left: 22px; }
+.tl-item { position: relative; padding-bottom: 16px; }
+.tl-item::before {
+  content: '';
+  position: absolute;
+  left: -14px; top: 8px; bottom: -4px;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--bg2), transparent);
+}
+.tl-dot {
+  position: absolute;
+  left: -18px; top: 4px;
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px var(--bg);
+}
+.tl-time { font-size: 10px; color: var(--text3); margin-bottom: 3px; font-weight: 600; letter-spacing: 0.04em; }
+.tl-text { font-size: 12.5px; font-weight: 600; color: var(--text1); }
+.tl-sub  { font-size: 11.5px; color: var(--text2); margin-top: 2px; }
+
+/* ══ COMM ROWS ════════════════════════════════════════════════════════ */
+.comm-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--bg);
+}
+.comm-row:last-child { border-bottom: none; }
+.comm-icon {
+  width: 34px; height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.comm-name   { font-size: 12.5px; font-weight: 600; color: var(--text1); }
+.comm-detail { font-size: 11.5px; color: var(--text2); }
+.comm-time   { font-size: 10px; color: var(--text3); margin-left: auto; white-space: nowrap; font-weight: 600; }
+
+/* ══ ISSUE ROWS ════════════════════════════════════════════════════ */
+.issue-row {
+  padding: 12px 14px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  border: 1px solid var(--border);
+}
+.issue-title { font-size: 12.5px; font-weight: 700; margin-bottom: 5px; }
+.issue-desc  { font-size: 11.5px; line-height: 1.6; opacity: 0.82; }
+
+/* ══ TABS ═══════════════════════════════════════════════════════════ */
+.tab-row  { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+.tab-btn  {
+  padding: 6px 14px;
+  font-size: 11.5px;
+  font-weight: 600;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  color: var(--text2);
+  background: var(--card);
+  transition: all 0.15s;
+  font-family: inherit;
+}
+.tab-btn.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+.tab-btn:hover:not(.active) { background: var(--bg2); border-color: var(--bg2); }
+
+/* ══ SEARCH ════════════════════════════════════════════════════════ */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 9px 14px;
+  margin-bottom: 16px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.search-bar:focus-within {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px var(--green-dim);
+}
+.search-bar input {
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  color: var(--text1);
+  outline: none;
+  flex: 1;
+  font-family: inherit;
+}
+.search-bar i { color: var(--text3); font-size: 15px; }
+
+/* ══ REPORT CARDS ══════════════════════════════════════════════════ */
+.report-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.report-card:hover {
+  border-color: var(--green);
+  box-shadow: 0 4px 20px rgba(0,196,140,0.1);
+  transform: translateX(3px);
+}
+.report-icon {
+  width: 42px; height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+/* ══ Q CAT ══════════════════════════════════════════════════════════ */
+.q-cat {
+  padding: 10px 14px;
+  border-radius: 12px;
+  margin-bottom: 6px;
+  background: var(--bg);
+  border: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.15s;
+}
+.q-cat:hover { border-color: var(--border); background: var(--card); }
+.q-cat-name  { font-size: 12px; color: var(--text1); font-weight: 500; }
+.q-cat-count { font-size: 12px; font-weight: 700; }
+
+/* ══ NOTICE ═════════════════════════════════════════════════════════ */
+.notice {
+  background: rgba(0,196,140,0.08);
+  border-left: 3px solid var(--green);
+  padding: 10px 14px;
+  border-radius: 0 12px 12px 0;
+  font-size: 12px;
+  color: #007A5E;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.section-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  margin-top: 6px;
+}
+
+.scrollable { max-height: 280px; overflow-y: auto; }
+.flag { font-size: 14px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <img src="data:image/png;base64,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" alt="PT Pertamina Geothermal Energy Tbk" style="width:148px;height:auto;display:block;margin-bottom:10px;">
+      <div class="logo-badge">PGEO · IDX</div>
+      <div class="logo-title">Investor Relations<br>Dashboard</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Overview</div>
+      <div class="nav-item active" onclick="navigate('overview', this)"><i class="ti ti-layout-dashboard"></i>Dashboard Utama</div>
+      <div class="nav-item" onclick="navigate('investors', this)"><i class="ti ti-users"></i>Database Investor <span class="nav-badge">427</span></div>
+      <div class="nav-item" onclick="navigate('engagement', this)"><i class="ti ti-messages"></i>Engagement & Komunikasi</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Analitik</div>
+      <div class="nav-item" onclick="navigate('sentiment', this)"><i class="ti ti-mood-smile"></i>Sentimen & Concern</div>
+      <div class="nav-item" onclick="navigate('questions', this)"><i class="ti ti-help-circle"></i>Pertanyaan Investor</div>
+      <div class="nav-item" onclick="navigate('distribution', this)"><i class="ti ti-chart-donut"></i>Distribusi & Profil</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Manajemen</div>
+      <div class="nav-item" onclick="navigate('issues', this)"><i class="ti ti-alert-triangle"></i>Potential Issues <span class="nav-badge nav-badge-red">4</span></div>
+      <div class="nav-item" onclick="navigate('earningscall', this)"><i class="ti ti-microphone"></i>Earnings Call Q&amp;A <span class="nav-badge" style="background:#7C3AED">87</span></div>
+      <div class="nav-item" onclick="navigate('reports', this)"><i class="ti ti-file-analytics"></i>Reports &amp; Export</div>
+      <div class="nav-item" onclick="navigate('planning', this)"><i class="ti ti-target"></i>Targeting & Planning</div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div style="margin-bottom:6px;color:rgba(255,255,255,0.55);font-size:10px">&#x25CF; Live &nbsp;|&nbsp; Last sync: 6 Mei 2026, 08:30 WIB</div>
+      <div style="border-top:0.5px solid rgba(255,255,255,0.08);padding-top:8px">
+        <div style="font-size:9px;color:rgba(255,255,255,0.3);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:3px">Manager Investor Relations</div>
+        <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.75)">Ronald Hutagalung</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <img src="data:image/png;base64,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" alt="PGE Logo" style="height:30px;width:auto;flex-shrink:0;margin-right:6px;">
+      <div class="topbar-title" id="page-title">Dashboard Utama</div>
+      <div class="topbar-date"><i class="ti ti-calendar"></i> Q1 2026 &nbsp;·&nbsp; per 6 Mei 2026</div>
+      <button class="btn-export"><i class="ti ti-download"></i> Export Report</button>
+    </div>
+
+    <div class="content">
+
+      <!-- OVERVIEW -->
+      <div class="page active" id="page-overview">
+        <div class="insight-box">
+          <div class="insight-title"><i class="ti ti-bulb"></i> Summary Insight — Q1 2026</div>
+          <div class="insight-item"><span class="insight-bullet"></span>Sentimen investor secara keseluruhan <strong>positif (62%)</strong>, didorong progress proyek Hululais &amp; Lumut Balai Phase 2. Namun meningkat pertanyaan terkait timeline COD.</div>
+          <div class="insight-item"><span class="insight-bullet"></span>Top concern: <strong>Dividend policy</strong> dan <strong>capex guidance</strong> meningkat signifikan pasca RUPS. Perlu proaktif komunikasi ke 18 investor utama.</div>
+          <div class="insight-item"><span class="insight-bullet"></span>Foreign investor mengalami penurunan kepemilikan 2,1pp — terutama dari AS &amp; Eropa. Prioritaskan NDR roadshow Q2 ke Singapura &amp; Hong Kong.</div>
+          <div class="insight-item"><span class="insight-bullet"></span>Phillip Sekuritas &amp; CLSA Indonesia belum ada kontak >30 hari. Segera eksekusi re-engagement sebelum laporan keuangan semester.</div>
+        </div>
+
+        <div class="metrics-row">
+          <div class="metric-card"><div class="metric-label">Total Investor</div><div class="metric-value">62.231</div><div class="metric-sub metric-up"><i class="ti ti-trending-up"></i> IDX Shareholders</div></div>
+          <div class="metric-card"><div class="metric-label">Market Capital</div><div class="metric-value">Rp41,06T</div><div class="metric-sub metric-up"><i class="ti ti-trending-up"></i> IDX Listed</div></div>
+          <div class="metric-card"><div class="metric-label">Total Queries Record</div><div class="metric-value">315</div><div class="metric-sub metric-up"><i class="ti ti-trending-up"></i> Q1 2026</div></div>
+          <div class="metric-card"><div class="metric-label">Total Interaksi Q1 2026</div><div class="metric-value">161</div><div class="metric-sub metric-up"><i class="ti ti-trending-up"></i> Q1 2026</div></div>
+          <div class="metric-card"><div class="metric-label">Sentimen Positif</div><div class="metric-value">62%</div><div class="metric-sub metric-up"><i class="ti ti-trending-up"></i> +4pp vs Q4</div></div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Frekuensi Media Komunikasi</div><span class="card-tag tag-live">Q1 2026</span></div>
+            <div class="bar-row"><div class="bar-label">Email</div><div class="bar-track"><div class="bar-fill" style="width:82%;background:#3B82F6"></div></div><div class="bar-pct">82%</div></div>
+            <div class="bar-row"><div class="bar-label">One-on-One</div><div class="bar-track"><div class="bar-fill" style="width:68%;background:#1D9E75"></div></div><div class="bar-pct">68%</div></div>
+            <div class="bar-row"><div class="bar-label">WhatsApp</div><div class="bar-track"><div class="bar-fill" style="width:54%;background:#7C3AED"></div></div><div class="bar-pct">54%</div></div>
+            <div class="bar-row"><div class="bar-label">Conference</div><div class="bar-track"><div class="bar-fill" style="width:42%;background:#F59E0B"></div></div><div class="bar-pct">42%</div></div>
+            <div class="bar-row"><div class="bar-label">NDR/Roadshow</div><div class="bar-track"><div class="bar-fill" style="width:28%;background:#EF4444"></div></div><div class="bar-pct">28%</div></div>
+            <div class="bar-row"><div class="bar-label">Phone/Call</div><div class="bar-track"><div class="bar-fill" style="width:21%;background:#6B7280"></div></div><div class="bar-pct">21%</div></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><div class="card-title">Sentimen Investor Q1 2026</div></div>
+            <div style="margin-bottom:14px">
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:#6B7280;margin-bottom:4px"><span>Positif</span><span style="color:#065F46;font-weight:700">62%</span></div>
+              <div class="bar-track" style="height:12px;margin-bottom:10px"><div class="bar-fill" style="width:62%;background:#1D9E75"></div></div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:#6B7280;margin-bottom:4px"><span>Netral</span><span style="color:#374151;font-weight:700">23%</span></div>
+              <div class="bar-track" style="height:12px;margin-bottom:10px"><div class="bar-fill" style="width:23%;background:#9CA3AF"></div></div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:#6B7280;margin-bottom:4px"><span>Negatif</span><span style="color:#991B1B;font-weight:700">15%</span></div>
+              <div class="bar-track" style="height:12px"><div class="bar-fill" style="width:15%;background:#EF4444"></div></div>
+            </div>
+            <div style="font-size:11px;color:#6B7280;margin-bottom:6px;font-weight:600">Concern Positif Teratas</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px">
+              <span class="badge badge-pos"><i class="ti ti-leaf"></i> ESG Progress</span>
+              <span class="badge badge-pos"><i class="ti ti-bolt"></i> Kapasitas RE</span>
+              <span class="badge badge-pos">Dividen stabil</span>
+            </div>
+            <div style="font-size:11px;color:#6B7280;margin-bottom:6px;font-weight:600">Concern Negatif Teratas</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px">
+              <span class="badge badge-neg">Capex overrun</span>
+              <span class="badge badge-neg">Timeline COD</span>
+              <span class="badge badge-neg">Eksposur USD</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Top 5 Investor/Analyst Engagement Q1 2026</div><span class="card-tag tag-info">Ranking</span></div>
+            <div class="investor-row">
+              <div class="inv-avatar" style="background:#DBEAFE;color:#1E40AF">VG</div>
+              <div><div class="inv-name">PT BRI Danareksa Sekuritas</div><div class="inv-sub">🇮🇩 Sekuritas · Domestik</div></div>
+              <div class="inv-val"><div>Rp8,2M</div><div><span class="badge badge-pos">34 engagement</span></div></div>
+            </div>
+            <div class="investor-row">
+              <div class="inv-avatar" style="background:#D1FAE5;color:#065F46">BR</div>
+              <div><div class="inv-name">Phillip Sekuritas</div><div class="inv-sub">🇮🇩 Sekuritas · Domestik</div></div>
+              <div class="inv-val"><div>Rp6,9M</div><div><span class="badge badge-warn">28 engagement</span></div></div>
+            </div>
+            <div class="investor-row">
+              <div class="inv-avatar" style="background:#EDE9FE;color:#5B21B6">GI</div>
+              <div><div class="inv-name">UOB Kay Hian Sekuritas</div><div class="inv-sub">🇸🇬 Sekuritas · Asing</div></div>
+              <div class="inv-val"><div>Rp5,8M</div><div><span class="badge badge-pos">24 engagement</span></div></div>
+            </div>
+            <div class="investor-row">
+              <div class="inv-avatar" style="background:#FEF3C7;color:#92400E">SI</div>
+              <div><div class="inv-name">RHB Sekuritas</div><div class="inv-sub">🇲🇾 Sekuritas · Asing</div></div>
+              <div class="inv-val"><div>Rp4,7M</div><div><span class="badge badge-pos">21 engagement</span></div></div>
+            </div>
+            <div class="investor-row">
+              <div class="inv-avatar" style="background:#FEE2E2;color:#991B1B">BT</div>
+              <div><div class="inv-name">Trimegah Sekuritas</div><div class="inv-sub">🇮🇩 Sekuritas · Domestik</div></div>
+              <div class="inv-val"><div>Rp4,2M</div><div><span class="badge badge-info">18 engagement</span></div></div>
+            </div>
+            <div style="margin-top:10px;text-align:center"><button class="tab-btn" onclick="navigate('investors',document.querySelectorAll('.nav-item')[1])">Lihat Top 20 Investor →</button></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><div class="card-title">Interaksi Terkini</div><span class="card-tag tag-live">Live</span></div>
+            <div class="engagement-timeline">
+              <div class="tl-item"><div class="tl-dot" style="background:#1D9E75"></div><div class="tl-time">Today, 08:15</div><div class="tl-text">One-on-One — PT BRI Danareksa Sekuritas</div><div class="tl-sub">Pertanyaan capex H2 2026 &amp; update Hululais</div></div>
+              <div class="tl-item"><div class="tl-dot" style="background:#3B82F6"></div><div class="tl-time">5 Mei 2026, 14:30</div><div class="tl-text">Email — Mandiri Sekuritas</div><div class="tl-sub">Request model keuangan terbaru Q1 2026</div></div>
+              <div class="tl-item"><div class="tl-dot" style="background:#F59E0B"></div><div class="tl-time">5 Mei 2026, 10:00</div><div class="tl-text">Conference — Bank of America Securities Forum</div><div class="tl-sub">Presentasi ESG &amp; geothermal capacity roadmap</div></div>
+              <div class="tl-item"><div class="tl-dot" style="background:#EF4444"></div><div class="tl-time">4 Mei 2026, 16:45</div><div class="tl-text">WhatsApp — Nomura Asset (Hiroshi Tanaka)</div><div class="tl-sub">Klarifikasi kebijakan dividen pasca RUPS</div></div>
+              <div class="tl-item"><div class="tl-dot" style="background:#7C3AED"></div><div class="tl-time">3 Mei 2026, 09:00</div><div class="tl-text">NDR — Singapura (GIC, Temasek, Fidelity)</div><div class="tl-sub">3 meetings · 2 follow-up item pending</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">Peringatan &amp; Tindak Lanjut</div><span class="card-tag tag-warn">4 item urgent</span></div>
+          <div class="alert-strip alert-danger"><i class="ti ti-clock"></i> <strong>Phillip Sekuritas</strong> — Belum ada kontak selama 47 hari. Segera jadwalkan follow-up komunikasi.</div>
+          <div class="alert-strip alert-danger"><i class="ti ti-clock"></i> <strong>CLSA Indonesia</strong> — Belum ada kontak selama 31 hari. Prioritaskan engagement segera.</div>
+          <div class="alert-strip alert-warn"><i class="ti ti-alert-triangle"></i> <strong>Bahana Sekuritas</strong> — Potential reach. Identifikasi peluang engagement dan inisiasi kontak pertama.</div>
+          <div class="alert-strip alert-info"><i class="ti ti-calendar"></i> <strong>Earnings Call Q1</strong> — Penyelenggaraan Earnings Call Q1 belum terlaksana. Segera koordinasikan jadwal.</div>
+        </div>
+      </div>
+
+      <!-- INVESTORS -->
+      <div class="page" id="page-investors">
+        <div class="search-bar"><i class="ti ti-search"></i><input type="text" placeholder="Cari nama investor, institusi, negara..." id="inv-search" oninput="filterInvestors(this.value)"></div>
+        <div class="tab-row" id="inv-tabs">
+          <button class="tab-btn active" onclick="filterType('all',this)">Semua (427)</button>
+          <button class="tab-btn" onclick="filterType('asing',this)">Asing (198)</button>
+          <button class="tab-btn" onclick="filterType('lokal',this)">Domestik (229)</button>
+          <button class="tab-btn" onclick="filterType('institusi',this)">Institusi</button>
+        </div>
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-header"><div class="card-title">Top 20 Investor — Engagement Terbanyak Q1 2026</div><span class="card-tag tag-info">Sorted by engagement</span></div>
+          <div class="table-wrap"><table><thead><tr><th>#</th><th>Investor</th><th>Tipe</th><th>Asal</th><th>Nilai Saham</th><th>Engagement</th><th>Sentiment</th><th>Terakhir Kontak</th><th>Status</th></tr></thead><tbody id="inv-tbody"></tbody></table></div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title" style="margin-bottom:12px">Segmentasi Tipe Investor</div>
+            <div class="bar-row"><div class="bar-label">Asset Management</div><div class="bar-track"><div class="bar-fill" style="width:72%;background:#3B82F6"></div></div><div class="bar-pct">34%</div></div>
+            <div class="bar-row"><div class="bar-label">Sekuritas</div><div class="bar-track"><div class="bar-fill" style="width:55%;background:#1D9E75"></div></div><div class="bar-pct">22%</div></div>
+            <div class="bar-row"><div class="bar-label">Dana Pensiun</div><div class="bar-track"><div class="bar-fill" style="width:42%;background:#7C3AED"></div></div><div class="bar-pct">18%</div></div>
+            <div class="bar-row"><div class="bar-label">Perbankan</div><div class="bar-track"><div class="bar-fill" style="width:28%;background:#F59E0B"></div></div><div class="bar-pct">12%</div></div>
+            <div class="bar-row"><div class="bar-label">Sovereign Fund</div><div class="bar-track"><div class="bar-fill" style="width:20%;background:#EF4444"></div></div><div class="bar-pct">8%</div></div>
+            <div class="bar-row"><div class="bar-label">Retail/Individu</div><div class="bar-track"><div class="bar-fill" style="width:14%;background:#6B7280"></div></div><div class="bar-pct">6%</div></div>
+          </div>
+          <div class="card">
+            <div class="card-title" style="margin-bottom:12px">Engagement yang Diharapkan Investor</div>
+            <div class="bar-row"><div class="bar-label" style="width:120px">Quarterly Update</div><div class="bar-track"><div class="bar-fill" style="width:90%;background:#1D9E75"></div></div><div class="bar-pct">90%</div></div>
+            <div class="bar-row"><div class="bar-label" style="width:120px">One-on-One Meeting</div><div class="bar-track"><div class="bar-fill" style="width:76%;background:#3B82F6"></div></div><div class="bar-pct">76%</div></div>
+            <div class="bar-row"><div class="bar-label" style="width:120px">ESG Report</div><div class="bar-track"><div class="bar-fill" style="width:70%;background:#F59E0B"></div></div><div class="bar-pct">70%</div></div>
+            <div class="bar-row"><div class="bar-label" style="width:120px">NDR/Roadshow</div><div class="bar-track"><div class="bar-fill" style="width:62%;background:#7C3AED"></div></div><div class="bar-pct">62%</div></div>
+            <div class="bar-row"><div class="bar-label" style="width:120px">Site Visit</div><div class="bar-track"><div class="bar-fill" style="width:48%;background:#EF4444"></div></div><div class="bar-pct">48%</div></div>
+            <div class="bar-row"><div class="bar-label" style="width:120px">Analyst Day</div><div class="bar-track"><div class="bar-fill" style="width:55%;background:#6B7280"></div></div><div class="bar-pct">55%</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ENGAGEMENT -->
+      <div class="page" id="page-engagement">
+        <div class="metrics-row" style="grid-template-columns:repeat(4,1fr)">
+          <div class="metric-card"><div class="metric-label">Total Interaksi Q1 2026</div><div class="metric-value">161</div><div class="metric-sub metric-up">Q1 2026</div></div>
+          <div class="metric-card"><div class="metric-label">Avg Respons Time</div><div class="metric-value">4,2 jam</div><div class="metric-sub metric-up">Target: &lt;24 Time ✓</div></div>
+          <div class="metric-card"><div class="metric-label">Open Rate Email</div><div class="metric-value">71%</div><div class="metric-sub metric-up">+5pp vs Q4</div></div>
+          <div class="metric-card"><div class="metric-label">Follow-up Pending</div><div class="metric-value">2</div><div class="metric-sub metric-down">Perlu tindak lanjut</div></div>
+        </div>
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-header"><div class="card-title">Riwayat Komunikasi Terbaru</div><span class="card-tag tag-live">Real-time</span></div>
+          <div id="comm-list"></div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Frekuensi Terakhir Interaksi</div><span class="card-tag tag-info">Q1 2026</span></div>
+            <div style="position:relative;height:180px"><canvas id="engagementChart"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Kanal Komunikasi Q1 2026</div></div>
+            <div style="position:relative;height:180px"><canvas id="channelChart"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SENTIMENT -->
+      <div class="page" id="page-sentiment">
+        <div class="metrics-row" style="grid-template-columns:repeat(3,1fr)">
+          <div class="metric-card"><div class="metric-label">Sentimen Positif</div><div class="metric-value" style="color:#065F46">62%</div><div class="metric-sub metric-up">+4pp vs Q4 2025</div></div>
+          <div class="metric-card"><div class="metric-label">Sentimen Netral</div><div class="metric-value" style="color:#374151">23%</div><div class="metric-sub">-1pp vs Q4 2025</div></div>
+          <div class="metric-card"><div class="metric-label">Sentimen Negatif</div><div class="metric-value" style="color:#991B1B">15%</div><div class="metric-sub metric-down">-3pp vs Q4 2025</div></div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Concern Positif Investor</div><span class="badge badge-pos">62% dari total</span></div>
+            <div class="issue-row" style="background:#D1FAE5;border-color:#6EE7B7;border-left:3px solid #1D9E75;color:#065F46">
+              <div class="issue-title">Progress ESG &amp; Sustainability</div>
+              <div class="issue-desc">Investor asing sangat apresiasi komitmen net-zero 2060 dan sertifikasi I-REC. ESG rating yang membaik menjadi daya tarik utama investor global.</div>
+              <div style="margin-top:6px"><span class="badge badge-pos">78 investor</span> <span class="badge badge-info">Asing dominan</span></div>
+            </div>
+            <div class="issue-row" style="background:#D1FAE5;border-color:#6EE7B7;border-left:3px solid #1D9E75;color:#065F46">
+              <div class="issue-title">Kapasitas Ekspansi Geothermal</div>
+              <div class="issue-desc">Pipeline proyek Hululais 110MW dan Lumut Balai Phase 2 mendapat respons positif, terutama dari investor infrastruktur dan dana pensiun jangka panjang.</div>
+              <div style="margin-top:6px"><span class="badge badge-pos">61 investor</span></div>
+            </div>
+            <div class="issue-row" style="background:#D1FAE5;border-color:#6EE7B7;border-left:3px solid #1D9E75;color:#065F46">
+              <div class="issue-title">Dividen Konsisten &amp; Yield Menarik</div>
+              <div class="issue-desc">Dividend yield 4,2% dinilai kompetitif dibanding peers regional. Kebijakan dividen minimal 30% dari laba bersih sangat diapresiasi investor income-oriented.</div>
+              <div style="margin-top:6px"><span class="badge badge-pos">54 investor</span></div>
+            </div>
+            <div class="issue-row" style="background:#D1FAE5;border-color:#6EE7B7;border-left:3px solid #1D9E75;color:#065F46">
+              <div class="issue-title">Dukungan Regulator &amp; Kepastian Tarif PLN</div>
+              <div class="issue-desc">Perpanjangan WKP dan kepastian tarif PLN memberikan visibilitas cashflow jangka panjang yang sangat dihargai investor institusi global.</div>
+              <div style="margin-top:6px"><span class="badge badge-pos">47 investor</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Concern Negatif Investor</div><span class="badge badge-neg">15% dari total</span></div>
+            <div class="issue-row" style="background:#FEE2E2;border-color:#FCA5A5;border-left:3px solid #EF4444;color:#991B1B">
+              <div class="issue-title">Keterlambatan Timeline COD Proyek</div>
+              <div class="issue-desc">Potensi delay commissioning Hululais menjadi concern utama. 23 investor mempertanyakan mitigasi risiko konstruksi dan kontrak EPC. Perlu komunikasi proaktif segera.</div>
+              <div style="margin-top:6px"><span class="badge badge-neg">23 investor</span> <span class="badge badge-warn">High priority</span></div>
+            </div>
+            <div class="issue-row" style="background:#FEE2E2;border-color:#FCA5A5;border-left:3px solid #EF4444;color:#991B1B">
+              <div class="issue-title">Capex Overrun &amp; Revisi Guidance</div>
+              <div class="issue-desc">Revisi capex +15% pada Q4 2025 masih membayangi persepsi. Investor meminta penjelasan detail dan komitmen cost discipline ke depan secara tertulis.</div>
+              <div style="margin-top:6px"><span class="badge badge-neg">19 investor</span></div>
+            </div>
+            <div class="issue-row" style="background:#FEE2E2;border-color:#FCA5A5;border-left:3px solid #EF4444;color:#991B1B">
+              <div class="issue-title">Eksposur Kurs USD &amp; Hedging Policy</div>
+              <div class="issue-desc">Dengan sebagian besar pendapatan dalam USD namun biaya operasional dalam IDR, investor mempertanyakan efektivitas hedging policy perseroan saat ini.</div>
+              <div style="margin-top:6px"><span class="badge badge-neg">16 investor</span></div>
+            </div>
+            <div class="issue-row" style="background:#FEE2E2;border-color:#FCA5A5;border-left:3px solid #EF4444;color:#991B1B">
+              <div class="issue-title">Likuiditas Saham &amp; Free Float Terbatas</div>
+              <div class="issue-desc">Free float 20% dinilai masih kecil untuk masuk indeks global tertentu. Investor institusi besar mengeluhkan likuiditas harian yang terbatas di IDX.</div>
+              <div style="margin-top:6px"><span class="badge badge-neg">11 investor</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:0">
+          <div class="card-header"><div class="card-title">Data Paling Banyak Diminta Investor</div><span class="card-tag tag-info">Q1 2026</span></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+            <div class="q-cat"><div class="q-cat-name"><i class="ti ti-chart-bar"></i> Model Keuangan &amp; Proyeksi</div><div class="q-cat-count" style="color:#1E40AF">147 permintaan</div></div>
+            <div class="q-cat"><div class="q-cat-name"><i class="ti ti-leaf"></i> ESG Data &amp; Sustainability Report</div><div class="q-cat-count" style="color:#065F46">112 permintaan</div></div>
+            <div class="q-cat"><div class="q-cat-name"><i class="ti ti-bolt"></i> Kapasitas &amp; Pipeline Proyek</div><div class="q-cat-count" style="color:#5B21B6">98 permintaan</div></div>
+            <div class="q-cat"><div class="q-cat-name"><i class="ti ti-coin"></i> Kebijakan Dividen &amp; Payout</div><div class="q-cat-count" style="color:#92400E">87 permintaan</div></div>
+            <div class="q-cat"><div class="q-cat-name"><i class="ti ti-building"></i> Struktur Korporasi &amp; Governance</div><div class="q-cat-count" style="color:#991B1B">64 permintaan</div></div>
+            <div class="q-cat"><div class="q-cat-name"><i class="ti ti-world"></i> Regulasi &amp; Kebijakan Energi</div><div class="q-cat-count" style="color:#374151">58 permintaan</div></div>
+          </div>
+        </div>
+
+        <!-- ANALYST REPORT SECTION WITHIN SENTIMENT PAGE -->
+        <div class="card" style="margin-top:16px">
+          <div class="card-header">
+            <div class="card-title"><i class="ti ti-file-analytics" style="color:#1D9E75;margin-right:6px"></i>Report Analis — Coverage &amp; Rekomendasi</div>
+            <span class="card-tag tag-info">Q1 2026</span>
+          </div>
+
+          <!-- Metrics strip -->
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px">
+            <div class="metric-card" style="border-color:#DBEAFE">
+              <div class="metric-label">Total Coverage Analis</div>
+              <div class="metric-value" style="font-size:20px">20</div>
+              <div class="metric-sub" style="color:#185FA5">Institusi aktif</div>
+            </div>
+            <div class="metric-card" style="border-color:#D1FAE5">
+              <div class="metric-label">Rekomendasi BUY</div>
+              <div class="metric-value" style="font-size:20px;color:#065F46">18</div>
+              <div class="metric-sub metric-up">90% dari coverage</div>
+            </div>
+            <div class="metric-card" style="border-color:#FEF3C7">
+              <div class="metric-label">Rekomendasi HOLD</div>
+              <div class="metric-value" style="font-size:20px;color:#92400E">1</div>
+              <div class="metric-sub" style="color:#92400E">5% dari coverage</div>
+            </div>
+            <div class="metric-card" style="border-color:#FEE2E2">
+              <div class="metric-label">Rekomendasi SELL</div>
+              <div class="metric-value" style="font-size:20px;color:#991B1B">1</div>
+              <div class="metric-sub metric-down">5% dari coverage</div>
+            </div>
+          </div>
+
+          <!-- Consensus price box -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
+            <div>
+              <div style="font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px">Konsensus Harga Target Analis</div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 12px;background:#D1FAE5;border-radius:8px">
+                  <span style="font-size:12px;color:#065F46">Target Tertinggi</span>
+                  <span style="font-size:14px;font-weight:700;color:#065F46">Rp1.900</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 12px;background:#DBEAFE;border-radius:8px">
+                  <span style="font-size:12px;color:#1E40AF">Konsensus Rata-rata</span>
+                  <span style="font-size:14px;font-weight:700;color:#1E40AF">Rp1.743</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 12px;background:#F3F4F6;border-radius:8px">
+                  <span style="font-size:12px;color:#374151">Harga Saat Ini</span>
+                  <span style="font-size:14px;font-weight:700;color:#374151">Rp1.540</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 12px;background:#FEE2E2;border-radius:8px">
+                  <span style="font-size:12px;color:#991B1B">Target Terendah</span>
+                  <span style="font-size:14px;font-weight:700;color:#991B1B">Rp1.450</span>
+                </div>
+              </div>
+              <div style="margin-top:10px;background:#D1FAE5;border-radius:8px;padding:12px;text-align:center">
+                <div style="font-size:11px;color:#065F46;font-weight:600">Upside Konsensus dari Harga Saat Ini</div>
+                <div style="font-size:26px;font-weight:700;color:#065F46">+13,2%</div>
+              </div>
+            </div>
+
+            <div>
+              <div style="font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px">Distribusi Rekomendasi</div>
+              <div style="position:relative;height:180px"><canvas id="analystRecChartSentiment"></canvas></div>
+            </div>
+          </div>
+
+          <!-- Analyst table -->
+          <div style="font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">Daftar Analis Coverage PGEO</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th><th>Analis</th><th>Institusi</th><th>Rekomendasi</th><th>Target Harga</th><th>Tgl Report</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td><strong>Sabrina</strong></td><td>Trimegah Sekuritas</td><td><span class="badge badge-pos">BUY</span></td><td style="font-weight:600">Rp1.850</td><td>5 Mei 2026</td></tr>
+                <tr><td>2</td><td><strong>Joseph Lumoindong</strong></td><td>DBS Sekuritas</td><td><span class="badge badge-pos">BUY</span></td><td style="font-weight:600">Rp1.900</td><td>28 Apr 2026</td></tr>
+                <tr><td>3</td><td><strong>Henry Tedja</strong></td><td>Mandiri Sekuritas</td><td><span class="badge badge-pos">BUY</span></td><td style="font-weight:600">Rp1.800</td><td>5 Mei 2026</td></tr>
+                <tr><td>4</td><td><strong>Adolf Richardo</strong></td><td>KB Valbury Sekuritas</td><td><span class="badge badge-pos">BUY</span></td><td style="font-weight:600">Rp1.650</td><td>2 Mei 2026</td></tr>
+                <tr><td>5</td><td><strong>Etta Rusdiana</strong></td><td>Maybank Sekuritas</td><td><span class="badge badge-pos">BUY</span></td><td style="font-weight:600">Rp1.750</td><td>30 Apr 2026</td></tr>
+                <tr><td>6</td><td><strong>Theodorus Melvin</strong></td><td>Stockbit</td><td><span class="badge badge-pos">BUY</span></td><td style="font-weight:600">Rp1.820</td><td>5 Mei 2026</td></tr>
+                <tr><td>7</td><td><strong>Muhammad Wafi</strong></td><td>Korea Investment Sek.</td><td><span class="badge badge-pos">BUY</span></td><td style="font-weight:600">Rp1.780</td><td>25 Apr 2026</td></tr>
+                <tr><td>8</td><td><strong>Sarah Beh</strong></td><td>(Tidak disebutkan)</td><td><span class="badge badge-warn">HOLD</span></td><td style="font-weight:600">Rp1.600</td><td>20 Apr 2026</td></tr>
+                <tr><td>9</td><td><strong>Analis</strong></td><td>Phillip Sekuritas</td><td><span class="badge badge-pos">BUY</span></td><td style="font-weight:600">Rp1.620</td><td>18 Mar 2026</td></tr>
+                <tr><td>10</td><td><strong>Analis</strong></td><td>CLSA Indonesia</td><td><span class="badge badge-pos">BUY</span></td><td style="font-weight:600">Rp1.900</td><td>2 Apr 2026</td></tr>
+                <tr><td>11</td><td><strong>Analis</strong></td><td>Bahana Sekuritas</td><td><span class="badge badge-pos">BUY</span></td><td style="font-weight:600">Rp1.550</td><td>15 Feb 2026</td></tr>
+                <tr><td>12</td><td><strong>Indra Cahya</strong></td><td>PT Macquarie Sekuritas Indonesia</td><td><span class="badge badge-neg">SELL</span></td><td style="font-weight:600">Rp1.380</td><td>22 Apr 2026</td></tr>
+                <tr><td>13</td><td><strong>Analis</strong></td><td>PT BRI Danareksa Sekuritas</td><td><span class="badge badge-pos">BUY</span></td><td style="font-weight:600">Rp1.820</td><td>29 Apr 2026</td></tr>
+                <tr><td>14</td><td><strong>Analis</strong></td><td>RHB Sekuritas</td><td><span class="badge badge-pos">BUY</span></td><td style="font-weight:600">Rp1.760</td><td>24 Apr 2026</td></tr>
+                <tr><td>15</td><td><strong>Analis</strong></td><td>UOB Kay Hian Sekuritas</td><td><span class="badge badge-pos">BUY</span></td><td style="font-weight:600">Rp1.800</td><td>3 Mei 2026</td></tr>
+                <tr><td>16</td><td><strong>Analis</strong></td><td>PT Sinarmas Sekuritas</td><td><span class="badge badge-pos">BUY</span></td><td style="font-weight:600">Rp1.700</td><td>1 Mei 2026</td></tr>
+                <tr><td>17</td><td><strong>Analis</strong></td><td>PT Valbury Asia Sekuritas</td><td><span class="badge badge-pos">BUY</span></td><td style="font-weight:600">Rp1.740</td><td>27 Apr 2026</td></tr>
+                <tr><td>18</td><td><strong>Analis</strong></td><td>PT Mandiri Sekuritas</td><td><span class="badge badge-pos">BUY</span></td><td style="font-weight:600">Rp1.850</td><td>5 Mei 2026</td></tr>
+                <tr><td>19</td><td><strong>Analis</strong></td><td>CGS International Securities</td><td><span class="badge badge-pos">BUY</span></td><td style="font-weight:600">Rp1.780</td><td>21 Apr 2026</td></tr>
+                <tr><td>20</td><td><strong>Analis</strong></td><td>Trimegah Sekuritas</td><td><span class="badge badge-pos">BUY</span></td><td style="font-weight:600">Rp1.680</td><td>15 Apr 2026</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- QUESTIONS -->
+      <div class="page" id="page-questions">
+        <div class="notice">315 queries masuk Q1 2026 — 89% telah dijawab, 11% dalam proses. Rata-rata respons per query.</div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Segmentasi Pertanyaan Q1 2026</div></div>
+            <div style="position:relative;height:210px"><canvas id="questionChart"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Pertanyaan Paling Sering Ditanyakan</div></div>
+            <div class="scrollable">
+              <div class="issue-row"><div class="issue-title">Berapa target produksi MWh PGE akhir 2026?</div><div style="display:flex;gap:4px;margin-top:4px"><span class="badge badge-info">Operasional</span><span class="badge badge-neu">43x</span></div></div>
+              <div class="issue-row"><div class="issue-title">Bagaimana rencana capex 3 tahun ke depan dan sumber pendanaan?</div><div style="display:flex;gap:4px;margin-top:4px"><span class="badge badge-info">Keuangan</span><span class="badge badge-neu">38x</span></div></div>
+              <div class="issue-row"><div class="issue-title">Apa kebijakan dividen PGE untuk FY2026?</div><div style="display:flex;gap:4px;margin-top:4px"><span class="badge badge-info">Keuangan</span><span class="badge badge-neu">35x</span></div></div>
+              <div class="issue-row"><div class="issue-title">Update status proyek Hululais — COD tetap H2 2026?</div><div style="display:flex;gap:4px;margin-top:4px"><span class="badge badge-warn">Operasional</span><span class="badge badge-neg">31x · concern</span></div></div>
+              <div class="issue-row"><div class="issue-title">Apa target GHG emission reduction PGE 2030?</div><div style="display:flex;gap:4px;margin-top:4px"><span class="badge badge-pos">ESG</span><span class="badge badge-neu">28x</span></div></div>
+              <div class="issue-row"><div class="issue-title">Bagaimana eksposur PGE terhadap risiko nilai tukar USD/IDR?</div><div style="display:flex;gap:4px;margin-top:4px"><span class="badge badge-info">Keuangan</span><span class="badge badge-neg">26x · concern</span></div></div>
+              <div class="issue-row"><div class="issue-title">Apakah PGE berencana masuk ke MSCI atau FTSE index?</div><div style="display:flex;gap:4px;margin-top:4px"><span class="badge badge-info">Strategi</span><span class="badge badge-neu">22x</span></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:16px">
+          <div class="card-header"><div class="card-title">Log Pertanyaan &amp; Tindak Lanjut</div><span class="card-tag tag-info">Terbaru</span></div>
+          <table><thead><tr><th>Tanggal</th><th>Jam</th><th>Investor / Analyst</th><th>Kanal</th><th>Pertanyaan &amp; Jawaban</th><th>Kategori</th><th>Status</th><th>PIC IR</th></tr></thead>
+          <tbody>
+            <tr><td>6 Mei 26</td><td>09:15</td><td>PT BRI Danareksa Sekuritas</td><td><span class="badge badge-info">Meeting</span></td><td>Update capex H2 2026 dan status Hululais — Dijawab oleh manajemen dengan data terkini.</td><td><span class="badge badge-neu">Operasional</span></td><td><span class="badge badge-warn">In Progress</span></td><td>Julio</td></tr>
+            <tr><td>5 Mei 26</td><td>14:30</td><td>Mandiri Sekuritas</td><td><span class="badge badge-neu">Email</span></td><td>Request model keuangan Q1 2026 — Model disiapkan, menunggu approval CFO.</td><td><span class="badge badge-info">Keuangan</span></td><td><span class="badge badge-warn">Pending</span></td><td>Lutfhan</td></tr>
+            <tr><td>5 Mei 26</td><td>10:00</td><td>BofA Securities</td><td><span class="badge badge-pos">Conference</span></td><td>ESG rating improvement plan 2026–2028 — Presentasi disampaikan, materi dikirim pasca acara.</td><td><span class="badge badge-pos">ESG</span></td><td><span class="badge badge-pos">Selesai</span></td><td>Almira</td></tr>
+            <tr><td>4 Mei 26</td><td>16:45</td><td>Nomura Asset</td><td><span class="badge badge-warn">WhatsApp</span></td><td>Klarifikasi kebijakan dividen pasca RUPS — Dijawab via email resmi dengan dokumen pendukung.</td><td><span class="badge badge-info">Keuangan</span></td><td><span class="badge badge-pos">Selesai</span></td><td>Julio</td></tr>
+            <tr><td>3 Mei 26</td><td>09:00</td><td>GIC Private</td><td><span class="badge badge-info">NDR</span></td><td>Long-term tariff structure &amp; PLN contract — Dijelaskan struktur kontrak dan kepastian tarif jangka panjang.</td><td><span class="badge badge-neu">Regulasi</span></td><td><span class="badge badge-pos">Selesai</span></td><td>Lutfhan</td></tr>
+          </tbody></table>
+        </div>
+      </div>
+
+      <!-- DISTRIBUTION -->
+      <div class="page" id="page-distribution">
+        <div class="metrics-row" style="grid-template-columns:repeat(4,1fr)">
+          <div class="metric-card"><div class="metric-label">Investor Asing</div><div class="metric-value">16,11%</div><div class="metric-sub metric-down">Pemegang saham asing</div></div>
+          <div class="metric-card"><div class="metric-label">Investor Domestik</div><div class="metric-value">83,89%</div><div class="metric-sub metric-up">Pemegang saham domestik</div></div>
+          <div class="metric-card"><div class="metric-label">Negara Terwakili</div><div class="metric-value">28</div><div class="metric-sub">5 benua</div></div>
+          <div class="metric-card"><div class="metric-label">Free Float Publik</div><div class="metric-value">10,94%</div><div class="metric-sub">IDX listed</div></div>
+        </div>
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-header"><div class="card-title">Distribusi Geografis Investor — 28 Negara</div><span class="card-tag tag-info">Global</span></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div>
+              <div style="font-size:11px;color:#6B7280;margin-bottom:10px;font-weight:700">Asia Pasifik &amp; ASEAN</div>
+              <div class="bar-row"><div class="bar-label" style="width:120px">🇮🇩 Indonesia</div><div class="bar-track"><div class="bar-fill" style="width:90%;background:#1D9E75"></div></div><div class="bar-pct">53,6%</div></div>
+              <div class="bar-row"><div class="bar-label" style="width:120px">🇸🇬 Singapura</div><div class="bar-track"><div class="bar-fill" style="width:45%;background:#3B82F6"></div></div><div class="bar-pct">8,2%</div></div>
+              <div class="bar-row"><div class="bar-label" style="width:120px">🇯🇵 Jepang</div><div class="bar-track"><div class="bar-fill" style="width:28%;background:#7C3AED"></div></div><div class="bar-pct">5,1%</div></div>
+              <div class="bar-row"><div class="bar-label" style="width:120px">🇭🇰 Hong Kong</div><div class="bar-track"><div class="bar-fill" style="width:20%;background:#F59E0B"></div></div><div class="bar-pct">3,7%</div></div>
+              <div class="bar-row"><div class="bar-label" style="width:120px">🇰🇷 Korea Selatan</div><div class="bar-track"><div class="bar-fill" style="width:12%;background:#EF4444"></div></div><div class="bar-pct">2,2%</div></div>
+            </div>
+            <div>
+              <div style="font-size:11px;color:#6B7280;margin-bottom:10px;font-weight:700">Amerika &amp; Eropa</div>
+              <div class="bar-row"><div class="bar-label" style="width:120px">🇺🇸 Amerika Serikat</div><div class="bar-track"><div class="bar-fill" style="width:64%;background:#1E40AF"></div></div><div class="bar-pct">11,8%</div></div>
+              <div class="bar-row"><div class="bar-label" style="width:120px">🇬🇧 Inggris</div><div class="bar-track"><div class="bar-fill" style="width:28%;background:#5B21B6"></div></div><div class="bar-pct">5,3%</div></div>
+              <div class="bar-row"><div class="bar-label" style="width:120px">🇳🇱 Belanda</div><div class="bar-track"><div class="bar-fill" style="width:18%;background:#065F46"></div></div><div class="bar-pct">3,4%</div></div>
+              <div class="bar-row"><div class="bar-label" style="width:120px">🇩🇪 Jerman</div><div class="bar-track"><div class="bar-fill" style="width:12%;background:#6B7280"></div></div><div class="bar-pct">2,3%</div></div>
+              <div class="bar-row"><div class="bar-label" style="width:120px">🇫🇷 Prancis</div><div class="bar-track"><div class="bar-fill" style="width:8%;background:#9CA3AF"></div></div><div class="bar-pct">1,5%</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="card"><div class="card-header"><div class="card-title">Komposisi Kepemilikan Saham</div></div><div style="position:relative;height:200px"><canvas id="ownershipChart"></canvas></div></div>
+          <div class="card"><div class="card-header"><div class="card-title">Tren Kepemilikan Asing — 12 Bulan</div></div><div style="position:relative;height:200px"><canvas id="foreignTrendChart"></canvas></div></div>
+        </div>
+      </div>
+
+
+      <!-- REPORT ANALYST -->
+      <div class="page" id="page-analystReport">
+
+        <div class="metrics-row" style="grid-template-columns:repeat(4,1fr)">
+          <div class="metric-card"><div class="metric-label">Total Coverage Analis</div><div class="metric-value">20</div><div class="metric-sub metric-up">Institusi aktif</div></div>
+          <div class="metric-card"><div class="metric-label">Rekomendasi Buy</div><div class="metric-value" style="color:#065F46">18</div><div class="metric-sub metric-up">90% dari coverage</div></div>
+          <div class="metric-card"><div class="metric-label">Rekomendasi Hold</div><div class="metric-value" style="color:#92400E">5</div><div class="metric-sub">28% dari coverage</div></div>
+          <div class="metric-card"><div class="metric-label">Rekomendasi Sell</div><div class="metric-value" style="color:#991B1B">1</div><div class="metric-sub metric-down">5% dari coverage</div></div>
+        </div>
+
+        <div class="notice">Data analyst coverage dan rekomendasi terkini. Klik baris untuk melihat detail laporan dan riwayat kontak.</div>
+
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-header">
+            <div class="card-title">Daftar Analis Coverage — PGEO</div>
+            <span class="card-tag tag-info">Q1 2026</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Analis</th><th>Institusi</th><th>Rekomendasi</th><th>Target Harga</th><th>Tgl Report</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td><strong>Sabrina</strong></td><td>Trimegah Sekuritas</td><td><span class="badge badge-pos">BUY</span></td><td>Rp1.850</td><td>5 Mei 2026</td></tr>
+                <tr><td>2</td><td><strong>Joseph Lumoindong</strong></td><td>DBS Sekuritas</td><td><span class="badge badge-pos">BUY</span></td><td>Rp1.900</td><td>28 Apr 2026</td></tr>
+                <tr><td>3</td><td><strong>Henry Tedja</strong></td><td>Mandiri Sekuritas</td><td><span class="badge badge-pos">BUY</span></td><td>Rp1.800</td><td>5 Mei 2026</td></tr>
+                <tr><td>4</td><td><strong>Adolf Richardo</strong></td><td>KB Valbury Sekuritas</td><td><span class="badge badge-pos">BUY</span></td><td>Rp1.650</td><td>2 Mei 2026</td></tr>
+                <tr><td>5</td><td><strong>Etta Rusdiana</strong></td><td>Maybank Sekuritas</td><td><span class="badge badge-pos">BUY</span></td><td>Rp1.750</td><td>30 Apr 2026</td></tr>
+                <tr><td>6</td><td><strong>Theodorus Melvin</strong></td><td>Stockbit</td><td><span class="badge badge-pos">BUY</span></td><td>Rp1.820</td><td>5 Mei 2026</td></tr>
+                <tr><td>7</td><td><strong>Muhammad Wafi</strong></td><td>Korea Investment Sek.</td><td><span class="badge badge-pos">BUY</span></td><td>Rp1.780</td><td>25 Apr 2026</td></tr>
+                <tr><td>8</td><td><strong>Sarah Beh</strong></td><td>(Tidak disebutkan)</td><td><span class="badge badge-warn">HOLD</span></td><td>Rp1.600</td><td>20 Apr 2026</td></tr>
+                <tr><td>9</td><td><strong>Analis</strong></td><td>Phillip Sekuritas</td><td><span class="badge badge-pos">BUY</span></td><td>Rp1.620</td><td>18 Mar 2026</td><td><span style="color:#991B1B;font-weight:600">47 days ago</span></td><td>Almira</td></tr>
+                <tr><td>10</td><td><strong>Analis</strong></td><td>CLSA Indonesia</td><td><span class="badge badge-pos">BUY</span></td><td>Rp1.900</td><td>2 Apr 2026</td><td><span style="color:#991B1B;font-weight:600">31 days ago</span></td><td>Julio</td></tr>
+                <tr><td>11</td><td><strong>Analis</strong></td><td>Bahana Sekuritas</td><td><span class="badge badge-pos">BUY</span></td><td>Rp1.550</td><td>15 Feb 2026</td></tr>
+                <tr><td>12</td><td><strong>Indra Cahya</strong></td><td>PT Macquarie Sekuritas Indonesia</td><td><span class="badge badge-neg">SELL</span></td><td>Rp1.380</td><td>22 Apr 2026</td></tr>
+              <tr><td>13</td><td><strong>Analis</strong></td><td>PT BRI Danareksa Sekuritas</td><td><span class="badge badge-pos">BUY</span></td><td>Rp1.820</td><td>29 Apr 2026</td></tr>
+              <tr><td>14</td><td><strong>Analis</strong></td><td>RHB Sekuritas</td><td><span class="badge badge-pos">BUY</span></td><td>Rp1.760</td><td>24 Apr 2026</td></tr>
+              <tr><td>15</td><td><strong>Analis</strong></td><td>UOB Kay Hian Sekuritas</td><td><span class="badge badge-pos">BUY</span></td><td>Rp1.800</td><td>3 Mei 2026</td></tr>
+              <tr><td>16</td><td><strong>Analis</strong></td><td>PT Sinarmas Sekuritas</td><td><span class="badge badge-pos">BUY</span></td><td>Rp1.700</td><td>1 Mei 2026</td></tr>
+              <tr><td>17</td><td><strong>Analis</strong></td><td>PT Valbury Asia Sekuritas</td><td><span class="badge badge-pos">BUY</span></td><td>Rp1.740</td><td>27 Apr 2026</td></tr>
+              <tr><td>18</td><td><strong>Analis</strong></td><td>PT Mandiri Sekuritas</td><td><span class="badge badge-pos">BUY</span></td><td>Rp1.850</td><td>5 Mei 2026</td></tr>
+              <tr><td>19</td><td><strong>Analis</strong></td><td>CGS International Securities</td><td><span class="badge badge-pos">BUY</span></td><td>Rp1.780</td><td>21 Apr 2026</td></tr>
+              <tr><td>20</td><td><strong>Analis</strong></td><td>Trimegah Sekuritas</td><td><span class="badge badge-pos">BUY</span></td><td>Rp1.680</td><td>15 Apr 2026</td></tr>
+            </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Distribusi Rekomendasi Analis</div></div>
+            <div style="position:relative;height:200px"><canvas id="analystRecChart"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Rentang Target Harga Analis</div><span class="card-tag tag-info">Konsensus</span></div>
+            <div style="margin-bottom:14px">
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:#6B7280;margin-bottom:4px"><span>Target Tertinggi</span><span style="color:#065F46;font-weight:700">Rp1.900</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:#6B7280;margin-bottom:4px"><span>Konsensus (Rata-rata)</span><span style="color:#0C1A2E;font-weight:700">Rp1.743</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:#6B7280;margin-bottom:4px"><span>Harga Saat Ini</span><span style="color:#374151;font-weight:700">Rp1.540</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:#6B7280;margin-bottom:4px"><span>Target Terendah</span><span style="color:#991B1B;font-weight:700">Rp1.450</span></div>
+            </div>
+            <div style="background:#D1FAE5;border-radius:8px;padding:10px;text-align:center">
+              <div style="font-size:11px;color:#065F46;font-weight:600">Upside Konsensus</div>
+              <div style="font-size:22px;font-weight:700;color:#065F46">+13,2%</div>
+              <div style="font-size:11px;color:#065F46">dari harga pasar saat ini</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ISSUES -->
+      <div class="page" id="page-issues">
+        <div class="metrics-row" style="grid-template-columns:repeat(4,1fr)">
+          <div class="metric-card"><div class="metric-label">Potential Issues Kritis</div><div class="metric-value" style="color:#991B1B">4</div><div class="metric-sub">Perlu tindakan segera</div></div>
+          <div class="metric-card"><div class="metric-label">Issues Dipantau</div><div class="metric-value" style="color:#92400E">8</div><div class="metric-sub">Pantau aktif</div></div>
+          <div class="metric-card"><div class="metric-label">Issues Resolved Q1</div><div class="metric-value" style="color:#065F46">12</div><div class="metric-sub">Berhasil dimitigasi</div></div>
+          <div class="metric-card"><div class="metric-label">Investor Terdampak</div><div class="metric-value">67</div><div class="metric-sub">Perlu komunikasi proaktif</div></div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Potential Issues Kritis</div><span class="badge badge-neg">4 isu</span></div>
+            <div class="issue-row" style="background:#FEE2E2;border-color:#FCA5A5;border-left:3px solid #EF4444;color:#991B1B">
+              <div style="display:flex;justify-content:space-between;align-items:center"><div class="issue-title">COD Delay Risk — Hululais 110MW</div><span class="badge badge-neg">Kritis</span></div>
+              <div class="issue-desc">Kontraktor EPC melaporkan potensi delay 3–4 bulan. 23 investor mempertanyakan. Risiko downgrade dari analis jika tidak dikomunikasikan sebelum laporan Q2.</div>
+              <div style="margin-top:8px;font-size:11px;font-weight:700">Antisipasi: Siapkan FAQ &amp; investor letter. Briefing khusus 10 investor utama.</div>
+            </div>
+            <div class="issue-row" style="background:#FEF3C7;border-color:#FDE68A;border-left:3px solid #F59E0B;color:#92400E;margin-top:8px">
+              <div style="display:flex;justify-content:space-between;align-items:center"><div class="issue-title">Kepemilikan Asing Menurun 2,1pp</div><span class="badge badge-warn">Tinggi</span></div>
+              <div class="issue-desc">Tren penurunan kepemilikan asing dari AS &amp; Eropa. Jika berlanjut, risiko exit lebih lanjut dan tekanan harga saham. Perlu roadshow defensif segera.</div>
+              <div style="margin-top:8px;font-size:11px;font-weight:700">Antisipasi: Percepat NDR Singapore &amp; HK Q2 2026. Target 15 investor asing potensial baru.</div>
+            </div>
+            <div class="issue-row" style="background:#FEF3C7;border-color:#FDE68A;border-left:3px solid #F59E0B;color:#92400E;margin-top:8px">
+              <div style="display:flex;justify-content:space-between;align-items:center"><div class="issue-title">Pertanyaan Dividend Policy Meningkat</div><span class="badge badge-warn">Tinggi</span></div>
+              <div class="issue-desc">Pasca RUPS April, 35 investor bertanya tentang dividend policy ke depan. Ada kekhawatiran reinvestasi capex vs distribusi ke pemegang saham.</div>
+              <div style="margin-top:8px;font-size:11px;font-weight:700">Antisipasi: Terbitkan investor guidance letter terkait dividend framework 2026–2028.</div>
+            </div>
+            <div class="issue-row" style="background:#DBEAFE;border-color:#BFDBFE;border-left:3px solid #3B82F6;color:#1E40AF;margin-top:8px">
+              <div style="display:flex;justify-content:space-between;align-items:center"><div class="issue-title">Free Float &amp; Index Inclusion</div><span class="badge badge-info">Medium</span></div>
+              <div class="issue-desc">11 investor institusi besar menyatakan free float 20% jadi hambatan masuk portofolio yang butuh minimum 25% float untuk eligibilitas indeks MSCI EM.</div>
+              <div style="margin-top:8px;font-size:11px;font-weight:700">Antisipasi: Siapkan kajian &amp; komunikasi roadmap peningkatan free float ke management.</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Anticipated Engagement per Segmen</div><span class="badge badge-info">Rekomendasi</span></div>
+            <div class="issue-row"><div class="issue-title"><i class="ti ti-users"></i> Investor Institusi Besar (&gt;Rp1T)</div><div class="issue-desc">Harapkan: Quarterly one-on-one, akses CFO/CEO langsung, model keuangan detail, site visit WKP utama. Frekuensi: minimal 1x per kuartal.</div><div style="margin-top:6px"><span class="badge badge-pos">18 investor</span></div></div>
+            <div class="issue-row"><div class="issue-title"><i class="ti ti-world"></i> Investor Asing (AS, Eropa)</div><div class="issue-desc">Harapkan: NDR tahunan, ESG impact report, sustainability roadmap, conference internasional, dan update real-time dalam bahasa Inggris.</div><div style="margin-top:6px"><span class="badge badge-info">56 investor</span></div></div>
+            <div class="issue-row"><div class="issue-title"><i class="ti ti-building-bank"></i> Dana Pensiun &amp; Asuransi</div><div class="issue-desc">Harapkan: Stabilitas dividen, analisis durasi aset, covenant compliance report, dan engagement dengan komisaris independen.</div><div style="margin-top:6px"><span class="badge badge-neu">34 investor</span></div></div>
+            <div class="issue-row"><div class="issue-title"><i class="ti ti-chart-line"></i> Sekuritas &amp; Analis</div><div class="issue-desc">Harapkan: Akses analyst day, earnings call transparan, guidance quantitative, dan media kit lengkap setiap perilisan laporan keuangan.</div><div style="margin-top:6px"><span class="badge badge-warn">29 institusi</span></div></div>
+            <div class="issue-row"><div class="issue-title"><i class="ti ti-leaf"></i> ESG / Green Investor</div><div class="issue-desc">Harapkan: TCFD report, Science-Based Targets progress, I-REC data, biodiversity impact assessment, dan sertifikasi standar internasional (MSCI ESG, Sustainalytics).</div><div style="margin-top:6px"><span class="badge badge-pos">22 investor</span></div></div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- EARNINGS CALL Q&A -->
+      <div class="page" id="page-earningscall">
+
+        <div class="insight-box">
+          <div class="insight-title"><i class="ti ti-microphone"></i>&nbsp; Earnings Call 3M26 Result &nbsp;·&nbsp; 5 Mei 2026 &nbsp;·&nbsp; 87 Peserta via Zoom</div>
+          <div class="insight-item"><span class="insight-bullet"></span>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px">"Accelerating Growth: Strengthening PGE's Position and Unlocking Geothermal Potential"</div>
+              <div style="font-size:12px;color:rgba(255,255,255,0.75);line-height:1.6">Dipaparkan oleh <strong>Ahmad Yani</strong> (Direktur Utama), <strong>Edwil Suzandi</strong> (Direktur Eksplorasi &amp; Pengembangan), <strong>Andi Joko</strong> (Direktur Operasi), <strong>Fransetya Hutabarat</strong> (Direktur Keuangan). <br>Moderator: <strong>Ronald Hutagalung</strong> — Manager Investor Relations.</div>
+            </div>
+          </div>
+          <div class="insight-item"><span class="insight-bullet"></span>Total <strong>12 penanya</strong> (8 analis bernama, 3 anonymous, 1 belum teridentifikasi). Tema dominan: guidance produksi, FX exposure, free float, new revenue stream, dan proyek pipeline.</div>
+          <div class="insight-item"><span class="insight-bullet"></span>Isu paling banyak diangkat: <strong>tight coal supply &amp; dampak ke PGE</strong>, <strong>capex &amp; produksi guidance 2026</strong>, dan <strong>free float regulatory requirement 15%</strong>.</div>
+        </div>
+
+        <div class="metrics-row" style="grid-template-columns:repeat(5,1fr)">
+          <div class="metric-card"><div class="metric-label">Analis Bertanya</div><div class="metric-value">12</div><div class="metric-sub">8 bernama · 3 anon</div></div>
+          <div class="metric-card"><div class="metric-label">Total Pertanyaan</div><div class="metric-value">21</div><div class="metric-sub">Multi-part Q&amp;A</div></div>
+          <div class="metric-card"><div class="metric-label">Channel</div><div class="metric-value">Zoom</div><div class="metric-sub">5 Mei 2026</div></div>
+          <div class="metric-card"><div class="metric-label">Tema Dominan</div><div class="metric-value" style="font-size:13px;padding-top:4px">Coal Supply</div><div class="metric-sub">4 pertanyaan</div></div>
+          <div class="metric-card"><div class="metric-label">Sentimen Umum</div><div class="metric-value" style="color:#065F46;font-size:16px">Positif</div><div class="metric-sub metric-up">Mayoritas apresiasi</div></div>
+        </div>
+
+        <!-- Filter bar -->
+        <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+          <div class="search-bar" style="margin-bottom:0;flex:1;min-width:220px">
+            <i class="ti ti-search"></i>
+            <input type="text" placeholder="Cari nama analis, institusi, topik pertanyaan..." id="qa-search" oninput="filterQA(this.value)">
+          </div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap">
+            <button class="tab-btn active" onclick="filterQACat('all',this)">Semua (12)</button>
+            <button class="tab-btn" onclick="filterQACat('keuangan',this)">Keuangan</button>
+            <button class="tab-btn" onclick="filterQACat('operasional',this)">Operasional</button>
+            <button class="tab-btn" onclick="filterQACat('strategi',this)">Strategi</button>
+            <button class="tab-btn" onclick="filterQACat('esg',this)">ESG/Regulasi</button>
+          </div>
+        </div>
+
+        <!-- Q&A cards container -->
+        <div id="qa-container"></div>
+
+        <!-- Charts row -->
+        <div class="grid-2" style="margin-top:16px">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Topik Pertanyaan — Earnings Call 3M26</div></div>
+            <div class="bar-row"><div class="bar-label" style="width:170px">Produksi &amp; Guidance</div><div class="bar-track"><div class="bar-fill" style="width:80%;background:#1D9E75"></div></div><div class="bar-pct">4 Q</div></div>
+            <div class="bar-row"><div class="bar-label" style="width:170px">Coal Supply &amp; PLN</div><div class="bar-track"><div class="bar-fill" style="width:70%;background:#3B82F6"></div></div><div class="bar-pct">3 Q</div></div>
+            <div class="bar-row"><div class="bar-label" style="width:170px">FX &amp; Pendanaan</div><div class="bar-track"><div class="bar-fill" style="width:70%;background:#7C3AED"></div></div><div class="bar-pct">3 Q</div></div>
+            <div class="bar-row"><div class="bar-label" style="width:170px">Free Float &amp; Regulasi</div><div class="bar-track"><div class="bar-fill" style="width:50%;background:#F59E0B"></div></div><div class="bar-pct">2 Q</div></div>
+            <div class="bar-row"><div class="bar-label" style="width:170px">Non-PLN Revenue</div><div class="bar-track"><div class="bar-fill" style="width:50%;background:#EF4444"></div></div><div class="bar-pct">2 Q</div></div>
+            <div class="bar-row"><div class="bar-label" style="width:170px">Capacity Factor Ops</div><div class="bar-track"><div class="bar-fill" style="width:40%;background:#065F46"></div></div><div class="bar-pct">2 Q</div></div>
+            <div class="bar-row"><div class="bar-label" style="width:170px">MESOP / Danantara</div><div class="bar-track"><div class="bar-fill" style="width:40%;background:#6B7280"></div></div><div class="bar-pct">2 Q</div></div>
+            <div class="bar-row"><div class="bar-label" style="width:170px">Green Bond / NPAT</div><div class="bar-track"><div class="bar-fill" style="width:25%;background:#9CA3AF"></div></div><div class="bar-pct">2 Q</div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Analis per Institusi</div><span class="card-tag tag-info">5 Mei 2026</span></div>
+            <div class="investor-row"><div class="inv-avatar" style="background:#EDE9FE;color:#5B21B6">TR</div><div><div class="inv-name">Trimegah Sekuritas</div><div class="inv-sub">Sabrina</div></div><div class="inv-val"><span class="badge badge-info">5 pertanyaan</span></div></div>
+            <div class="investor-row"><div class="inv-avatar" style="background:#DBEAFE;color:#1E40AF">DB</div><div><div class="inv-name">DBS Sekuritas</div><div class="inv-sub">Joseph Lumoindong</div></div><div class="inv-val"><span class="badge badge-info">4 pertanyaan</span></div></div>
+            <div class="investor-row"><div class="inv-avatar" style="background:#F3F4F6;color:#374151">AN</div><div><div class="inv-name">Anonymous (3 penanya)</div><div class="inv-sub">Bryan A, Sarah Beh, lainnya</div></div><div class="inv-val"><span class="badge badge-neu">4 pertanyaan</span></div></div>
+            <div class="investor-row"><div class="inv-avatar" style="background:#FEF3C7;color:#92400E">KB</div><div><div class="inv-name">KB Valbury Sekuritas</div><div class="inv-sub">Adolf Richardo</div></div><div class="inv-val"><span class="badge badge-info">2 pertanyaan</span></div></div>
+            <div class="investor-row"><div class="inv-avatar" style="background:#D1FAE5;color:#065F46">MS</div><div><div class="inv-name">Mandiri Sekuritas</div><div class="inv-sub">Henry Tedja</div></div><div class="inv-val"><span class="badge badge-info">2 pertanyaan</span></div></div>
+            <div class="investor-row"><div class="inv-avatar" style="background:#FEE2E2;color:#991B1B">MB</div><div><div class="inv-name">Maybank Sekuritas</div><div class="inv-sub">Etta Rusdiana</div></div><div class="inv-val"><span class="badge badge-neu">1 pertanyaan</span></div></div>
+            <div class="investor-row"><div class="inv-avatar" style="background:#F3F4F6;color:#374151">SB</div><div><div class="inv-name">Stockbit</div><div class="inv-sub">Theodorus Melvin</div></div><div class="inv-val"><span class="badge badge-neu">1 pertanyaan</span></div></div>
+            <div class="investor-row"><div class="inv-avatar" style="background:#EDE9FE;color:#5B21B6">KI</div><div><div class="inv-name">Korea Investment Sek.</div><div class="inv-sub">Muhammad Wafi</div></div><div class="inv-val"><span class="badge badge-neu">1 pertanyaan</span></div></div>
+          </div>
+        </div>
+
+        <!-- Follow-up tracker -->
+        <div class="card" style="margin-top:16px">
+          <div class="card-header"><div class="card-title">Follow-up Tracker — Item Open Pasca Earnings Call</div><span class="badge badge-warn">5 open</span></div>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Analis / Institusi</th><th>Isu / Pertanyaan</th><th>Kategori</th><th>Status</th><th>Tindak Lanjut</th><th>PIC IR</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Sabrina</strong> — Trimegah</td><td>Free float plan to meet 15% regulatory requirement</td><td><span class="badge badge-warn">Regulasi</span></td><td><span class="badge badge-warn">Partial</span></td><td>Siapkan timeline roadmap free float secara tertulis</td><td>Ronald H.</td></tr>
+              <tr><td><strong>Bryan A</strong></td><td>Non-PLN revenue aspiration % dalam 5–10 tahun</td><td><span class="badge badge-info">Strategi</span></td><td><span class="badge badge-warn">Partial</span></td><td>Siapkan target % non-PLN revenue breakdown per segmen</td><td>Sari A.</td></tr>
+              <tr><td><strong>Joseph Lumoindong</strong> — DBS</td><td>Danantara investment scheme update on PGEO</td><td><span class="badge badge-info">Strategi</span></td><td><span class="badge badge-warn">Belum final</span></td><td>Pantau &amp; update jika ada perubahan material</td><td>Budi R.</td></tr>
+              <tr><td><strong>Henry Tedja</strong> — Mandiri</td><td>Production guidance revision potensi upgrade</td><td><span class="badge badge-info">Operasional</span></td><td><span class="badge badge-pos">Dijawab</span></td><td>Update jika ada revisi RKAP mid-year</td><td>Ronald H.</td></tr>
+              <tr><td><strong>Anonymous</strong></td><td>DMO batubara reduction &amp; renewable tariff update</td><td><span class="badge badge-neu">Regulasi</span></td><td><span class="badge badge-warn">Belum ada kebijakan</span></td><td>Pantau kebijakan ESDM &amp; update jika ada perubahan</td><td>Ani P.</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+
+      </div>
+
+      <!-- REPORTS -->
+      <div class="page" id="page-reports">
+        <div class="notice">Semua laporan dapat digenerate secara otomatis. Klik laporan untuk mulai menyusunnya bersama AI.</div>
+        <div class="section-title">Laporan Rutin</div>
+        <div class="report-card"><div class="report-icon" style="background:#DBEAFE"><i class="ti ti-file-analytics" style="color:#1E40AF;font-size:20px"></i></div><div style="flex:1"><div style="font-size:13px;font-weight:700;color:#0C1A2E">Monthly IR Activity Report</div><div style="font-size:11px;color:#6B7280">Ringkasan aktivitas, engagement, dan insight bulanan untuk manajemen senior</div></div><span class="badge badge-info">Generate</span></div>
+        <div class="report-card"><div class="report-icon" style="background:#D1FAE5"><i class="ti ti-presentation" style="color:#065F46;font-size:20px"></i></div><div style="flex:1"><div style="font-size:13px;font-weight:700;color:#0C1A2E">Quarterly Management Report</div><div style="font-size:11px;color:#6B7280">Laporan kuartalan untuk direksi: distribusi, sentimen, issues, dan rekomendasi strategis</div></div><span class="badge badge-pos">Generate</span></div>
+        <div class="report-card"><div class="report-icon" style="background:#FEF3C7"><i class="ti ti-mail" style="color:#92400E;font-size:20px"></i></div><div style="flex:1"><div style="font-size:13px;font-weight:700;color:#0C1A2E">Investor Letter / Blast</div><div style="font-size:11px;color:#6B7280">Draft surat investor terkait update material, kebijakan korporasi, atau isu penting lainnya</div></div><span class="badge badge-warn">Generate</span></div>
+        <div class="section-title" style="margin-top:16px">Analytical &amp; Strategic Reports</div>
+        <div class="report-card"><div class="report-icon" style="background:#EDE9FE"><i class="ti ti-mood-happy" style="color:#5B21B6;font-size:20px"></i></div><div style="flex:1"><div style="font-size:13px;font-weight:700;color:#0C1A2E">Laporan Analisis Sentimen</div><div style="font-size:11px;color:#6B7280">Pemetaan sentimen mendalam, concern positif/negatif, tren per kuartal, dan rekomendasi komunikasi proaktif</div></div><span class="badge badge-info">Generate</span></div>
+        <div class="report-card"><div class="report-icon" style="background:#FEE2E2"><i class="ti ti-world" style="color:#991B1B;font-size:20px"></i></div><div style="flex:1"><div style="font-size:13px;font-weight:700;color:#0C1A2E">Investor Profile &amp; Segmentation Report</div><div style="font-size:11px;color:#6B7280">Pemetaan lengkap basis investor: geografi, tipe, nilai kepemilikan, engagement score, potensi pengembangan</div></div><span class="badge badge-neg">Generate</span></div>
+        <div class="report-card"><div class="report-icon" style="background:#D1FAE5"><i class="ti ti-map-pin" style="color:#065F46;font-size:20px"></i></div><div style="flex:1"><div style="font-size:13px;font-weight:700;color:#0C1A2E">NDR / Roadshow Planning Report</div><div style="font-size:11px;color:#6B7280">Rencana NDR lengkap: target investor, agenda, key messages, materi presentasi yang direkomendasikan</div></div><span class="badge badge-pos">Generate</span></div>
+        <div class="report-card"><div class="report-icon" style="background:#DBEAFE"><i class="ti ti-alert-triangle" style="color:#1E40AF;font-size:20px"></i></div><div style="flex:1"><div style="font-size:13px;font-weight:700;color:#0C1A2E">Issue Tracker &amp; Mitigasi Report</div><div style="font-size:11px;color:#6B7280">Status semua potential issues, langkah mitigasi, investor yang terdampak, dan timeline penyelesaian</div></div><span class="badge badge-info">Generate</span></div>
+      </div>
+
+      <!-- PLANNING -->
+      <div class="page" id="page-planning">
+        <div class="section-title">Targeting &amp; Planning Berbasis Data</div>
+        <div class="grid-2" style="margin-bottom:16px">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Target Investor Baru Q2 2026</div><span class="badge badge-info">14 target</span></div>
+            <div class="investor-row"><div class="inv-avatar" style="background:#DBEAFE;color:#1E40AF">AP</div><div><div class="inv-name">APG Asset Management</div><div class="inv-sub">🇳🇱 ESG Focus · Potensial tinggi</div></div><div class="inv-val"><span class="badge badge-pos">High</span></div></div>
+            <div class="investor-row"><div class="inv-avatar" style="background:#D1FAE5;color:#065F46">CG</div><div><div class="inv-name">Capital Group</div><div class="inv-sub">🇺🇸 Asset Management · Growth</div></div><div class="inv-val"><span class="badge badge-pos">High</span></div></div>
+            <div class="investor-row"><div class="inv-avatar" style="background:#EDE9FE;color:#5B21B6">KI</div><div><div class="inv-name">Korea Investment Corp</div><div class="inv-sub">🇰🇷 Sovereign Fund</div></div><div class="inv-val"><span class="badge badge-warn">Medium</span></div></div>
+            <div class="investor-row"><div class="inv-avatar" style="background:#FEF3C7;color:#92400E">FI</div><div><div class="inv-name">Fidelity International</div><div class="inv-sub">🇬🇧 Asset Management</div></div><div class="inv-val"><span class="badge badge-warn">Medium</span></div></div>
+            <div style="padding:8px 0;font-size:11px;color:#6B7280">+ 10 target investor lainnya dalam pipeline</div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Kalender Engagement Q2–Q3 2026</div></div>
+            <div class="engagement-timeline">
+              <div class="tl-item"><div class="tl-dot" style="background:#1D9E75"></div><div class="tl-time">15–16 Mei 2026</div><div class="tl-text">NDR Hong Kong — 8 meetings</div><div class="tl-sub">GIC, Fidelity, CLSA, UBS Asset Management</div></div>
+              <div class="tl-item"><div class="tl-dot" style="background:#3B82F6"></div><div class="tl-time">22 Mei 2026</div><div class="tl-text">Earnings Call Q1 2026</div><div class="tl-sub">Semua investor — live stream + Q&amp;A session</div></div>
+              <div class="tl-item"><div class="tl-dot" style="background:#7C3AED"></div><div class="tl-time">5–6 Jun 2026</div><div class="tl-text">NDR Singapura — 6 meetings</div><div class="tl-sub">Temasek, Eastspring, DBS Asset Management</div></div>
+              <div class="tl-item"><div class="tl-dot" style="background:#F59E0B"></div><div class="tl-time">18 Jun 2026</div><div class="tl-text">Site Visit — WKP Kamojang</div><div class="tl-sub">5 investor institusi terpilih</div></div>
+              <div class="tl-item"><div class="tl-dot" style="background:#EF4444"></div><div class="tl-time">Juli 2026</div><div class="tl-text">Annual Analyst Day</div><div class="tl-sub">Seluruh analis &amp; media — Jakarta Convention Center</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Investor Scoring &amp; Prioritas Engagement</div><span class="card-tag tag-info">Data-driven model</span></div>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Investor</th><th>AUM Score</th><th>Engagement Score</th><th>Sentiment Score</th><th>Growth Potential</th><th>Tier</th><th>Aksi</th></tr></thead>
+            <tbody>
+              <tr><td><strong>PT BRI Danareksa Sekuritas</strong></td><td><span class="badge badge-pos">95/100</span></td><td><span class="badge badge-pos">88/100</span></td><td><span class="badge badge-warn">72/100</span></td><td><span class="badge badge-info">Stabil</span></td><td><span class="badge badge-neg">Tier 1</span></td><td><button class="tab-btn" style="font-size:10px;padding:3px 8px">Plan Engagement</button></td></tr>
+              <tr><td><strong>BlackRock Inc.</strong></td><td><span class="badge badge-pos">92/100</span></td><td><span class="badge badge-warn">61/100</span></td><td><span class="badge badge-warn">68/100</span></td><td><span class="badge badge-neg">Perlu perhatian</span></td><td><span class="badge badge-neg">Tier 1</span></td><td><button class="tab-btn" style="font-size:10px;padding:3px 8px">Reactivate</button></td></tr>
+              <tr><td><strong>GIC Private Ltd</strong></td><td><span class="badge badge-pos">85/100</span></td><td><span class="badge badge-pos">82/100</span></td><td><span class="badge badge-pos">89/100</span></td><td><span class="badge badge-pos">Tumbuh</span></td><td><span class="badge badge-neg">Tier 1</span></td><td><button class="tab-btn" style="font-size:10px;padding:3px 8px">Upsell</button></td></tr>
+              <tr><td><strong>Schroders Indonesia</strong></td><td><span class="badge badge-warn">72/100</span></td><td><span class="badge badge-pos">84/100</span></td><td><span class="badge badge-pos">91/100</span></td><td><span class="badge badge-pos">Tumbuh</span></td><td><span class="badge badge-info">Tier 2</span></td><td><button class="tab-btn" style="font-size:10px;padding:3px 8px">Plan Engagement</button></td></tr>
+              <tr><td><strong>BPJS Ketenagakerjaan</strong></td><td><span class="badge badge-warn">70/100</span></td><td><span class="badge badge-warn">74/100</span></td><td><span class="badge badge-pos">85/100</span></td><td><span class="badge badge-info">Stabil</span></td><td><span class="badge badge-info">Tier 2</span></td><td><button class="tab-btn" style="font-size:10px;padding:3px 8px">Plan Engagement</button></td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const pageNames = {
+  overview:'Dashboard Utama', investors:'Database Investor',
+  engagement:'Engagement & Komunikasi', sentiment:'Sentimen & Concern',
+  questions:'Pertanyaan Investor', distribution:'Distribusi & Profil', analystReport:'Report Analis',
+  issues:'Potential Issues', earningscall:'Earnings Call 3M26 — Analyst Q&A', reports:'Reports & Export', planning:'Targeting & Planning'
+};
+
+function navigate(page, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  if (el) el.classList.add('active');
+  document.getElementById('page-title').textContent = pageNames[page] || page;
+  if (page === 'engagement') initEngagementCharts();
+  if (page === 'distribution') initDistributionCharts();
+  if (page === 'sentiment') initSentimentAnalystChart();
+  if (page === 'analystReport') { initDistributionCharts(); }
+  if (page === 'questions') initQuestionChart();
+}
+
+const topInvestors = [
+  {rank:1,name:'PT BRI Danareksa Sekuritas',type:'Sekuritas',country:'🇮🇩 ID',aum:'Rp8,2M',eng:34,sent:'Positif',last:'Today',status:'Aktif'},
+  {rank:2,name:'Phillip Sekuritas',type:'Sekuritas',country:'🇮🇩 ID',aum:'Rp6,9M',eng:28,sent:'Netral',last:'47 days ago',status:'Perhatian'},
+  {rank:3,name:'UOB Kay Hian Sekuritas',type:'Sekuritas',country:'🇸🇬 SG',aum:'Rp5,8M',eng:24,sent:'Positif',last:'3 Mei',status:'Aktif'},
+  {rank:4,name:'RHB Sekuritas',type:'Sekuritas',country:'🇲🇾 MY',aum:'Rp4,7M',eng:21,sent:'Positif',last:'5 Mei',status:'Aktif'},
+  {rank:5,name:'Trimegah Sekuritas',type:'Sekuritas',country:'🇮🇩 ID',aum:'Rp4,2M',eng:18,sent:'Positif',last:'4 Mei',status:'Aktif'},
+  {rank:6,name:'PT Sinarmas Sekuritas',type:'Sekuritas',country:'🇮🇩 ID',aum:'Rp3,8M',eng:17,sent:'Netral',last:'4 Mei',status:'Aktif'},
+  {rank:7,name:'PT Valbury Asia Sekuritas',type:'Sekuritas',country:'🇮🇩 ID',aum:'Rp3,1M',eng:16,sent:'Positif',last:'5 Mei',status:'Aktif'},
+  {rank:8,name:'Bahana Sekuritas',type:'Sekuritas',country:'🇮🇩 ID',aum:'Rp2,7M',eng:15,sent:'Positif',last:'3 Mei',status:'Aktif'},
+  {rank:9,name:'PT Mandiri Sekuritas',type:'Sekuritas',country:'🇮🇩 ID',aum:'Rp2,4M',eng:14,sent:'Positif',last:'2 Mei',status:'Aktif'},
+  {rank:10,name:'PT Macquarie Sekuritas Indonesia',type:'Sekuritas',country:'🇦🇺 AU',aum:'Rp1,9M',eng:13,sent:'Netral',last:'28 Apr',status:'Aktif'},
+  {rank:11,name:'Aberdeen Standard',type:'Asset Management',country:'🇬🇧 UK',aum:'Rp1,6M',eng:12,sent:'Positif',last:'25 Apr',status:'Aktif'},
+  {rank:12,name:'Manulife AM Indo',type:'Asset Management',country:'🇮🇩 ID',aum:'Rp1,4M',eng:11,sent:'Positif',last:'29 Apr',status:'Aktif'},
+  {rank:13,name:'UBS Asset Management',type:'Asset Management',country:'🇨🇭 CH',aum:'Rp1,4M',eng:11,sent:'Netral',last:'22 Apr',status:'Aktif'},
+  {rank:14,name:'Eastspring Investments',type:'Asset Management',country:'🇸🇬 SG',aum:'Rp1,2M',eng:10,sent:'Positif',last:'30 Apr',status:'Aktif'},
+  {rank:15,name:'Dana Pensiun Telkom',type:'Dana Pensiun',country:'🇮🇩 ID',aum:'Rp1,1M',eng:10,sent:'Positif',last:'1 Mei',status:'Aktif'},
+  {rank:16,name:'HSBC Asset Management',type:'Asset Management',country:'🇬🇧 UK',aum:'Rp987Jt',eng:9,sent:'Netral',last:'20 Apr',status:'Pantau'},
+  {rank:17,name:'Amundi Asset Management',type:'Asset Management',country:'🇫🇷 FR',aum:'Rp854Jt',eng:9,sent:'Netral',last:'18 Apr',status:'Pantau'},
+  {rank:18,name:'Bahana TCW',type:'Asset Management',country:'🇮🇩 ID',aum:'Rp721Jt',eng:8,sent:'Positif',last:'2 Mei',status:'Aktif'},
+  {rank:19,name:'Morgan Stanley IM',type:'Asset Management',country:'🇺🇸 AS',aum:'Rp638Jt',eng:8,sent:'Netral',last:'15 Apr',status:'Pantau'},
+  {rank:20,name:'Danareksa IM',type:'Asset Management',country:'🇮🇩 ID',aum:'Rp512Jt',eng:7,sent:'Positif',last:'28 Apr',status:'Aktif'},
+];
+
+function getSentBadge(s){if(s==='Positif')return'<span class="badge badge-pos">'+s+'</span>';if(s==='Negatif')return'<span class="badge badge-neg">'+s+'</span>';return'<span class="badge badge-neu">'+s+'</span>';}
+function getStatusBadge(s){if(s==='Aktif')return'<span class="badge badge-pos">'+s+'</span>';if(s==='Perhatian')return'<span class="badge badge-neg">'+s+'</span>';return'<span class="badge badge-warn">'+s+'</span>';}
+
+function renderInvestors(data){
+  document.getElementById('inv-tbody').innerHTML=data.map(i=>`<tr><td style="color:#9CA3AF;font-weight:700">${i.rank}</td><td><strong>${i.name}</strong></td><td style="color:#6B7280;font-size:11px">${i.type}</td><td>${i.country}</td><td style="font-weight:700">${i.aum}</td><td><span class="badge badge-info">${i.eng}x</span></td><td>${getSentBadge(i.sent)}</td><td style="font-size:11px;color:#6B7280">${i.last}</td><td>${getStatusBadge(i.status)}</td></tr>`).join('');
+}
+renderInvestors(topInvestors);
+
+function filterInvestors(q){renderInvestors(topInvestors.filter(i=>i.name.toLowerCase().includes(q.toLowerCase())||i.type.toLowerCase().includes(q.toLowerCase())||i.country.toLowerCase().includes(q.toLowerCase())));}
+function filterType(type,el){document.querySelectorAll('#inv-tabs .tab-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');if(type==='all')renderInvestors(topInvestors);else if(type==='asing')renderInvestors(topInvestors.filter(i=>!i.country.includes('ID')));else if(type==='lokal')renderInvestors(topInvestors.filter(i=>i.country.includes('ID')));else renderInvestors(topInvestors.filter(i=>i.type!=='Individu'));}
+
+
+const qaData = [
+  {
+    id:1, analyst:'Joseph Lumoindong', company:'DBS Sekuritas', avatar:'DB', avBg:'#DBEAFE', avColor:'#1E40AF',
+    date:'5 Mei 2026', channel:'Earnings Call (Zoom)', channelIcon:'ti-video', sentimen:'Positif',
+    categories:['operasional','strategi'],
+    questions:[
+      {q:'Apakah pandangan PGE terkait pengetatan pasokan batubara dan potensi dampaknya terhadap peningkatan permintaan PLN terhadap energi terbarukan, khususnya panas bumi?', cat:'Operasional', c:'badge-info'},
+      {q:'Apakah terdapat rencana atau pertimbangan terkait potensi pelaksanaan gelombang baru program MESOP setelah batas waktu Januari 2027?', cat:'Strategi', c:'badge-neu'},
+      {q:'Will current geopolitical situation and tight coal supply potentially raise your production guidance for this year?', cat:'Operasional', c:'badge-info'},
+      {q:'Any update on Danantara investment on PGEO asset?', cat:'Strategi', c:'badge-neu'},
+    ],
+    keyAnswer:'Produksi 1Q26 mencapai 1.370 GWh (+15,13% YoY), capacity factor 90,77% (+5,03%). Belum ada skema investasi Danantara ke PGEO; Danantara berperan sebagai fasilitator kolaborasi PGE–PLN. MESOP berakhir Agustus 2026 sesuai prospektus, tidak ada rencana penambahan.',
+    concern:'Tight coal supply, Danantara scheme, MESOP',
+    followUp:'open'
+  },
+  {
+    id:2, analyst:'Muhammad Wafi', company:'Korea Investment Sekuritas', avatar:'KI', avBg:'#EDE9FE', avColor:'#5B21B6',
+    date:'5 Mei 2026', channel:'Earnings Call (Zoom)', channelIcon:'ti-video', sentimen:'Positif',
+    categories:['strategi'],
+    questions:[
+      {q:'Dalam 5 tahun ke depan bagaimana komposisi growth kinerja PGE? Apakah kontribusi pendapatan akan lebih didominasi dari new projects atau masih dari existing assets?', cat:'Strategi', c:'badge-neu'},
+    ],
+    keyAnswer:'Jangka pendek 2026: masih existing assets (target 5.255 GWh, +3,14% YoY). Target kapasitas 1 GW di 2028 dan 1,5 GW di 2031 (dari 727 MW saat ini). Kontribusi proyek baru berpotensi mencapai 50% total pendapatan ke depan.',
+    concern:'Growth composition, new project contribution timeline',
+    followUp:'closed'
+  },
+  {
+    id:3, analyst:'Etta Rusdiana', company:'Maybank Sekuritas', avatar:'MB', avBg:'#FEE2E2', avColor:'#991B1B',
+    date:'5 Mei 2026', channel:'Earnings Call (Zoom)', channelIcon:'ti-video', sentimen:'Netral',
+    categories:['keuangan'],
+    questions:[
+      {q:'Apakah account receivable dari PLN masih on track, atau akankah ada setback sebagai dampak dari pelemahan Rupiah terhadap USD?', cat:'Keuangan', c:'badge-pos'},
+    ],
+    keyAnswer:'Pembayaran PLN masih on track sesuai jadwal 30 hari setelah invoice. PGE yakin PLN sebagai offtaker akan menjaga komitmen meski ada volatilitas kurs USD/IDR.',
+    concern:'PLN payment schedule, FX IDR/USD volatility',
+    followUp:'closed'
+  },
+  {
+    id:4, analyst:'Theodorus Melvin', company:'Stockbit', avatar:'SM', avBg:'#F3F4F6', avColor:'#374151',
+    date:'5 Mei 2026', channel:'Earnings Call (Zoom)', channelIcon:'ti-video', sentimen:'Netral',
+    categories:['operasional'],
+    questions:[
+      {q:'Faktor kapasitas Kamojang mencapai 95,52% di 1Q26. Seberapa besar potensi peningkatan lebih lanjut, apakah dapat mencapai 99%? Jika tidak, apa faktor pembatasnya — pasokan uap, jadwal EAF/maintenance, atau faktor lainnya?', cat:'Operasional', c:'badge-info'},
+    ],
+    keyAnswer:'Belum dapat mencapai 99% karena maintenance PLTP PLN IP Unit 2 & 3 (kendala EAF) dan pembatasan Unit 4 & 5 (~93–94%) saat demand rendah di akhir pekan. Suplai uap tidak ada kendala — kapasitas sumur tersedia hingga ~250 MW.',
+    concern:'Capacity factor ceiling, EAF maintenance constraint',
+    followUp:'closed'
+  },
+  {
+    id:5, analyst:'Adolf Richardo', company:'KB Valbury Sekuritas', avatar:'KB', avBg:'#FEF3C7', avColor:'#92400E',
+    date:'5 Mei 2026', channel:'Earnings Call (Zoom)', channelIcon:'ti-video', sentimen:'Netral',
+    categories:['operasional'],
+    questions:[
+      {q:'Apakah ada shutdown dan maintenance serupa seperti di WK Karaha yang akan dilakukan di wilayah kerja lain di sisa tahun ini?', cat:'Operasional', c:'badge-info'},
+      {q:'Target produksi WK Lahendong diturunkan ke 792 GWh untuk tahun ini. Apakah penurunan ini terkait dengan pekerjaan maintenance?', cat:'Operasional', c:'badge-info'},
+    ],
+    keyAnswer:'Masih ada jadwal maintenance di Lahendong dan Lumut Balai, masing-masing 20–25 hari. Penurunan target Lahendong ke 792 GWh disebabkan Major Overhaul Unit 5 & 6. Target produksi diharapkan kembali optimal pasca maintenance selesai.',
+    concern:'Maintenance schedule, production downtime Lahendong',
+    followUp:'closed'
+  },
+  {
+    id:6, analyst:'Sabrina', company:'Trimegah Sekuritas', avatar:'TR', avBg:'#EDE9FE', avColor:'#5B21B6',
+    date:'5 Mei 2026', channel:'Earnings Call (Zoom)', channelIcon:'ti-video', sentimen:'Netral',
+    categories:['keuangan','strategi','esg'],
+    questions:[
+      {q:'With JPY strengthening against USD, how should we think about FX exposure and finance costs going forward?', cat:'Keuangan', c:'badge-pos'},
+      {q:'Dalam kondisi suku bunga yang lebih tinggi untuk jangka waktu lebih lama, langkah apa yang telah diambil manajemen untuk memitigasi potensi kenaikan biaya pendanaan?', cat:'Keuangan', c:'badge-pos'},
+      {q:'Any changes in 2026 guidance? Can you also share the 2026 capex guidance?', cat:'Keuangan', c:'badge-pos'},
+      {q:'Mengingat prospek penambahan kapasitas yang terbatas hingga 2028, apa faktor utama yang dapat mendorong earnings growth (efisiensi, optimalisasi biaya)?', cat:'Strategi', c:'badge-neu'},
+      {q:'With current free float at ~11%, what are the company\'s plans to meet the 15% regulatory requirement?', cat:'Regulasi', c:'badge-warn'},
+    ],
+    keyAnswer:'Guidance 2026 tetap: Produksi 5.255 GWh, Revenue US$445–455jt, EBITDA US$340–350jt, Net Income US$150–160jt, Capex US$209jt. Free float wajib 12,5% di 2027 dan 15% di 2029 — diskusi intensif dengan pemegang saham pengendali sedang berlangsung. FX JPY bersifat non-cash jangka pendek.',
+    concern:'FX JPY/USD exposure, free float regulatory 15%, suku bunga tinggi',
+    followUp:'open'
+  },
+  {
+    id:7, analyst:'Bryan A', company:'(Tidak disebutkan)', avatar:'BA', avBg:'#D1FAE5', avColor:'#065F46',
+    date:'5 Mei 2026', channel:'Earnings Call (Zoom)', channelIcon:'ti-video', sentimen:'Positif',
+    categories:['strategi','operasional'],
+    questions:[
+      {q:'Bagaimana rencana PGEO untuk meningkatkan sumber pendapatan non-PLN? Berapa aspirasi persentase pendapatan non-PLN dalam 5–10 tahun ke depan? Apakah pilot Green Data Center di Kamojang akan di scale-up?', cat:'Strategi', c:'badge-neu'},
+      {q:'Bagaimana perkembangan pembangunan PLTP Hululais milik PLN? Apakah on track untuk penyelesaian di 2028?', cat:'Operasional', c:'badge-info'},
+    ],
+    keyAnswer:'Non-PLN streams: green hydrogen pilot (100 kg/hari), Flow2Max technology licensing, Green Data Center Kamojang (5 MW scalable, target 2028), PGE Labs (ISO/IEC 17025). Hululais: pre-qualification FCRS target Q2 2026, pinjaman JICA sudah ditandatangani 30 Mar 2026 — on track 2028.',
+    concern:'Non-PLN revenue % target belum spesifik, Hululais COD timeline',
+    followUp:'open'
+  },
+  {
+    id:8, analyst:'Henry Tedja', company:'Mandiri Sekuritas', avatar:'HT', avBg:'#D1FAE5', avColor:'#065F46',
+    date:'5 Mei 2026', channel:'Earnings Call (Zoom)', channelIcon:'ti-video', sentimen:'Positif',
+    categories:['operasional'],
+    questions:[
+      {q:'Apakah ada potensi untuk upgrade electricity production guidance, mengingat produksi di 1Q2026 tumbuh signifikan dan Perseroan diuntungkan dengan adanya tight coal supply?', cat:'Operasional', c:'badge-info'},
+      {q:'Apakah strong demand dari PLN ini masih berlanjut di bulan April dan Mei 2026?', cat:'Operasional', c:'badge-info'},
+    ],
+    keyAnswer:'Belum ada rencana revisi guidance (tetap 5.255 GWh). 1Q26 = 1.370 GWh (26% dari target, +15,13% YoY). Demand PLN masih kuat di April–Mei 2026, terutama di area Ulubelu dan Lahendong.',
+    concern:'Production upside potential, guidance revision',
+    followUp:'open'
+  },
+  {
+    id:9, analyst:'Anonymous Attendee', company:'Anonymous', avatar:'AN', avBg:'#F3F4F6', avColor:'#374151',
+    date:'5 Mei 2026', channel:'Earnings Call (Zoom)', channelIcon:'ti-video', sentimen:'Positif',
+    categories:['esg','operasional'],
+    questions:[
+      {q:'Terkait pemerintah yang akan menurunkan DMO batubara dan meningkatkan tarif renewable, apakah ada perkembangan sampai saat ini?', cat:'Regulasi', c:'badge-warn'},
+    ],
+    keyAnswer:'RKAB produksi batubara sudah disesuaikan sejak 2025, disahkan April lalu. Namun penurunan DMO batubara dan perubahan tarif renewable belum ada implementasi kebijakan spesifik hingga saat ini.',
+    concern:'DMO batubara, tarif renewable belum berubah',
+    followUp:'open'
+  },
+  {
+    id:10, analyst:'Anonymous Attendee', company:'Anonymous', avatar:'AN', avBg:'#F3F4F6', avColor:'#374151',
+    date:'5 Mei 2026', channel:'Earnings Call (Zoom)', channelIcon:'ti-video', sentimen:'Positif',
+    categories:['keuangan'],
+    questions:[
+      {q:'Could management share whether the USD green bond proceeds raised in early 2024 have been deployed or still being held? If not deployed, what is the timeline or plan for deploying this capital?', cat:'Keuangan', c:'badge-pos'},
+    ],
+    keyAnswer:'Green bond USD 400 juta (April 2023) telah habis terealisasi per Juni 2024. Digunakan untuk refinancing bridge loan Juni 2023 dan dialokasikan ke PLTP eligible: Hululais, Karaha, Lahendong U5&6, Lumut Balai U1&2, Ulubelu U1&2, Kamojang U5.',
+    concern:'Green bond deployment transparency',
+    followUp:'closed'
+  },
+  {
+    id:11, analyst:'Anonymous Attendee', company:'Anonymous', avatar:'AN', avBg:'#F3F4F6', avColor:'#374151',
+    date:'5 Mei 2026', channel:'Earnings Call (Zoom)', channelIcon:'ti-video', sentimen:'Positif',
+    categories:['keuangan'],
+    questions:[
+      {q:'Mohon dijelaskan NPAT PGEO tanpa forex reversal? Apakah core business margin Perseroan masih mengalami pertumbuhan?', cat:'Keuangan', c:'badge-pos'},
+    ],
+    keyAnswer:'Pertumbuhan net income lebih didorong kinerja operasional. Kenaikan pendapatan produksi US$15,16 juta YoY (dari Kamojang, Lumut Balai, LB Unit 2 sejak Jun 2025) — lebih tinggi dari kontribusi FX gain US$12,21 juta YoY.',
+    concern:'Core NPAT vs FX gain decomposition',
+    followUp:'closed'
+  },
+  {
+    id:12, analyst:'Sarah Beh', company:'(Tidak disebutkan)', avatar:'SB', avBg:'#DBEAFE', avColor:'#1E40AF',
+    date:'5 Mei 2026', channel:'Earnings Call (Zoom)', channelIcon:'ti-video', sentimen:'Netral',
+    categories:['operasional'],
+    questions:[
+      {q:'Is there any concern of persistent oversupply at the region where Lahendong plant is located? Are future capacity additions also focused in that area?', cat:'Operasional', c:'badge-info'},
+    ],
+    keyAnswer:'Sistem Sulawesi Utara–Gorontalo justru mengalami peningkatan demand 30–40 MW sejak April 2025, berlanjut hingga akhir tahun. Tight coal supply mendorong dispatch ke PLTP termasuk Lahendong. Penambahan kapasitas tetap fokus di existing resource base.',
+    concern:'Lahendong regional oversupply concern',
+    followUp:'closed'
+  },
+];
+
+function qaCatClass(cat) {
+  const m = {keuangan:'badge-pos',operasional:'badge-info',strategi:'badge-neu',esg:'badge-warn'};
+  return m[cat]||'badge-neu';
+}
+function qaCatLabel(cat) {
+  const m = {keuangan:'Keuangan',operasional:'Operasional',strategi:'Strategi',esg:'ESG/Regulasi'};
+  return m[cat]||cat;
+}
+
+function renderQA(data) {
+  const c = document.getElementById('qa-container');
+  if (!c) return;
+  if (!data.length) {
+    c.innerHTML = '<div style="text-align:center;padding:32px;color:#6B7280;font-size:13px">Tidak ada data yang cocok dengan filter.</div>';
+    return;
+  }
+  c.innerHTML = data.map(item => {
+    const catBadges = item.categories.map(ct => `<span class="badge ${qaCatClass(ct)}">${qaCatLabel(ct)}</span>`).join('');
+    const sentCls = item.sentimen==='Positif'?'badge-pos':item.sentimen==='Negatif'?'badge-neg':'badge-neu';
+    const fuCls = item.followUp==='open'?'badge-warn':'badge-pos';
+    const fuLabel = item.followUp==='open'?'Follow-up Open':'Closed';
+    const qRows = item.questions.map((qq,i) => `
+      <div style="display:flex;gap:8px;margin-bottom:6px;${i<item.questions.length-1?'padding-bottom:6px;border-bottom:0.5px solid #E5E7EB':''}">
+        <span style="background:#0C1A2E;color:#fff;font-size:10px;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">${i+1}</span>
+        <div style="flex:1">
+          <div style="font-size:12px;color:#111827;line-height:1.5">${qq.q}</div>
+          <span class="badge ${qq.c}" style="margin-top:4px;font-size:10px">${qq.cat}</span>
+        </div>
+      </div>`).join('');
+    return `
+    <div class="card" style="margin-bottom:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="inv-avatar" style="background:${item.avBg};color:${item.avColor};width:36px;height:36px;font-size:12px;flex-shrink:0">${item.avatar}</div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#0C1A2E">${item.analyst}</div>
+            <div style="font-size:11px;color:#6B7280">${item.company}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">
+          ${catBadges}
+          <span class="badge ${sentCls}">${item.sentimen}</span>
+          <span style="font-size:11px;color:#9CA3AF"><i class="ti ti-calendar" style="font-size:11px"></i> ${item.date}</span>
+          <span style="font-size:11px;color:#9CA3AF"><i class="ti ti-video" style="font-size:11px"></i> ${item.channel}</span>
+        </div>
+      </div>
+      <div style="background:#F9FAFB;border-radius:8px;padding:12px;margin-bottom:10px">
+        <div style="font-size:10px;font-weight:700;color:#6B7280;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px">Pertanyaan (${item.questions.length})</div>
+        ${qRows}
+      </div>
+      <div style="border-left:3px solid #1D9E75;padding:8px 12px;background:#F0FDF4;border-radius:0 8px 8px 0;margin-bottom:8px">
+        <div style="font-size:10px;font-weight:700;color:#065F46;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">Ringkasan Jawaban</div>
+        <div style="font-size:11.5px;color:#065F46;line-height:1.6">${item.keyAnswer}</div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px">
+        <div style="font-size:11px;color:#6B7280"><i class="ti ti-alert-circle" style="font-size:12px"></i> Concern: <strong style="color:#374151">${item.concern}</strong></div>
+        <span class="badge ${fuCls}">${fuLabel}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+renderQA(qaData);
+
+let qaState = { search: '', cat: 'all' };
+
+function applyQAFilter() {
+  let d = qaData;
+  if (qaState.cat !== 'all') d = d.filter(q => q.categories.includes(qaState.cat));
+  if (qaState.search) {
+    const s = qaState.search.toLowerCase();
+    d = d.filter(q =>
+      q.analyst.toLowerCase().includes(s) ||
+      q.company.toLowerCase().includes(s) ||
+      q.questions.some(qq => qq.q.toLowerCase().includes(s)) ||
+      q.concern.toLowerCase().includes(s)
+    );
+  }
+  renderQA(d);
+}
+
+function filterQA(val) { qaState.search = val; applyQAFilter(); }
+
+function filterQACat(cat, el) {
+  document.querySelectorAll('#page-earningscall .tab-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  qaState.cat = cat;
+  applyQAFilter();
+}
+
+
+const comms=[
+  {icon:'ti-video',bg:'#DBEAFE',color:'#1E40AF',name:'PT BRI Danareksa Sekuritas — One-on-One',detail:'Update produksi & capex H2 2026',time:'Today 08:15',ch:'Meeting'},
+  {icon:'ti-mail',bg:'#D1FAE5',color:'#065F46',name:'Mandiri Sekuritas',detail:'Request model keuangan Q1 2026',time:'Yesterday 14:30',ch:'Email'},
+  {icon:'ti-building',bg:'#FEF3C7',color:'#92400E',name:'BofA Securities Conference',detail:'ESG & geothermal capacity presentation',time:'Yesterday 10:00',ch:'Conference'},
+  {icon:'ti-brand-whatsapp',bg:'#D1FAE5',color:'#065F46',name:'Nomura Asset — Hiroshi Tanaka',detail:'Klarifikasi dividend policy pasca RUPS',time:'2 days ago 16:45',ch:'WhatsApp'},
+  {icon:'ti-plane',bg:'#EDE9FE',color:'#5B21B6',name:'NDR Singapura — GIC, Temasek, Fidelity',detail:'3 meetings · 2 follow-up pending',time:'3 days ago 09:00',ch:'NDR'},
+  {icon:'ti-phone',bg:'#FEE2E2',color:'#991B1B',name:'Aberdeen Standard — Sarah Chen',detail:'Pertanyaan ESG TCFD report 2025',time:'4 days ago 11:30',ch:'Call'},
+];
+
+function renderComms(){
+  const el=document.getElementById('comm-list');if(!el)return;
+  el.innerHTML=comms.map(c=>`<div class="comm-row"><div class="comm-icon" style="background:${c.bg}"><i class="ti ${c.icon}" style="color:${c.color}"></i></div><div style="flex:1"><div class="comm-name">${c.name} <span class="badge badge-neu" style="font-size:10px">${c.ch}</span></div><div class="comm-detail">${c.detail}</div></div><div class="comm-time">${c.time}</div></div>`).join('');
+}
+
+let inited={};
+function initEngagementCharts(){
+  renderComms();
+  if(inited.eng)return;inited.eng=true;
+  new Chart(document.getElementById('engagementChart'),{type:'doughnut',data:{labels:['< 1 Minggu (28%)','< 1 Bulan (46%)','< 3 Bulan (21%)','< 6 Bulan (5%)'],datasets:[{data:[28,46,21,5],backgroundColor:['#1D9E75','#3B82F6','#F59E0B','#EF4444'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11},padding:8,boxWidth:12}}},cutout:'60%'}});
+  new Chart(document.getElementById('channelChart'),{type:'doughnut',data:{labels:['Email','One-on-One','WhatsApp','Conference','NDR','Call'],datasets:[{data:[82,68,54,42,28,21],backgroundColor:['#3B82F6','#1D9E75','#7C3AED','#F59E0B','#EF4444','#6B7280'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11},padding:8,boxWidth:12}}},cutout:'65%'}});
+}
+function initDistributionCharts(){
+  if(inited.dist)return;inited.dist=true;
+  new Chart(document.getElementById('ownershipChart'),{type:'doughnut',data:{labels:['Pertamina Power Indonesia 68,29%','Masdar 14,85%','Pertamina Pedeve Indonesia 5,92%','Publik 10,94%'],datasets:[{data:[68.29,14.85,5.92,10.94],backgroundColor:['#0C1A2E','#1D9E75','#3B82F6','#F59E0B'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11},padding:8,boxWidth:12}}},cutout:'60%'}});
+  new Chart(document.getElementById('foreignTrendChart'),{type:'line',data:{labels:['Mei','Jun','Jul','Agt','Sep','Okt','Nov','Des','Jan','Feb','Mar','Apr'],datasets:[{label:'Kepemilikan Asing (%)',data:[48.5,48.2,47.8,48.0,47.5,48.5,47.9,48.5,47.8,47.2,46.8,46.4],borderColor:'#EF4444',backgroundColor:'rgba(239,68,68,0.08)',borderWidth:2,tension:0.4,fill:true,pointRadius:3,pointBackgroundColor:'#EF4444'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:44,max:52,ticks:{font:{size:11},callback:v=>v+'%'},grid:{color:'rgba(0,0,0,0.04)'}},x:{ticks:{font:{size:10}},grid:{display:false}}}}});
+  // Analyst recommendation chart
+  if(document.getElementById('analystRecChart')){
+    new Chart(document.getElementById('analystRecChart'),{type:'doughnut',data:{labels:['BUY (61%)', 'HOLD (28%)', 'SELL (11%)'],datasets:[{data:[18,1,1],backgroundColor:['#1D9E75','#F59E0B','#EF4444'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:12},padding:12,boxWidth:14}}},cutout:'60%'}});
+  }
+}
+function initSentimentAnalystChart(){
+  if(chartsInited.sentimentAnalyst)return; chartsInited.sentimentAnalyst=true;
+  var el=document.getElementById('analystRecChartSentiment');
+  if(!el)return;
+  new Chart(el,{type:'doughnut',data:{labels:['BUY — 18 analis (90%)','HOLD — 1 analis (5%)','SELL — 1 analis (5%)'],datasets:[{data:[18,1,1],backgroundColor:['#1D9E75','#F59E0B','#EF4444'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},padding:10,boxWidth:12}}},cutout:'60%'}});
+}
+function initQuestionChart(){
+  if(inited.q)return;inited.q=true;
+  new Chart(document.getElementById('questionChart'),{type:'doughnut',data:{labels:['Keuangan 31%','ESG 21%','Operasional 17%','Strategi 14%','Governance 9%','Lainnya 8%'],datasets:[{data:[31,21,17,14,9,8],backgroundColor:['#3B82F6','#1D9E75','#7C3AED','#F59E0B','#EF4444','#6B7280'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11},padding:8,boxWidth:12}}},cutout:'60%'}});
+}
+</script>
+</body>
+</html>
